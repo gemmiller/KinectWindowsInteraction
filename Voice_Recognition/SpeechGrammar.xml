@@ -59,7 +59,7 @@
       <item>
         <tag>A</tag>
         <one-of>
-          <item> ay </item>
+          <item> a </item>
         </one-of>
       </item>
       <item>
@@ -71,7 +71,7 @@
       <item>
         <tag>C</tag>
         <one-of>
-          <item> sea </item>
+          <item> cee </item>
         </one-of>
         <item>
           <tag>D</tag>
@@ -82,13 +82,13 @@
         <item>
           <tag>E</tag>
           <one-of>
-            <item> ee </item>
+            <item> e </item>
           </one-of>
         </item>
         <item>
           <tag>F</tag>
           <one-of>
-            <item> eff </item>
+            <item> ef </item>
           </one-of>
         </item>
         <item>
@@ -106,7 +106,7 @@
         <item>
           <tag>I</tag>
           <one-of>
-            <item> eye </item>
+            <item> i </item>
           </one-of>
         </item>
         <item>
@@ -124,7 +124,7 @@
         <item>
           <tag>L</tag>
           <one-of>
-            <item> elle </item>
+            <item> el </item>
           </one-of>
         </item>
         <item>
@@ -142,43 +142,43 @@
         <item>
           <tag>O</tag>
           <one-of>
-            <item> oh </item>
+            <item> o </item>
           </one-of>
         </item>
         <item>
           <tag>P</tag>
           <one-of>
-            <item> pea </item>
+            <item> pee </item>
           </one-of>
         </item>
         <item>
           <tag>Q</tag>
           <one-of>
-            <item> queue </item>
+            <item> cue </item>
           </one-of>
         </item>
         <item>
           <tag>R</tag>
           <one-of>
-            <item> are </item>
+            <item> ar </item>
           </one-of>
         </item>
         <item>
           <tag>S</tag>
           <one-of>
-            <item> es </item>
+            <item> ess </item>
           </one-of>
         </item>
         <item>
           <tag>T</tag>
           <one-of>
-            <item> tea </item>
+            <item> tee </item>
           </one-of>
         </item>
         <item>
           <tag>U</tag>
           <one-of>
-            <item> you </item>
+            <item> u </item>
           </one-of>
         </item>
         <item>
@@ -190,7 +190,7 @@
         <item>
           <tag>W</tag>
           <one-of>
-            <item> double you </item>
+            <item> double-u </item>
           </one-of>
         </item>
         <item>

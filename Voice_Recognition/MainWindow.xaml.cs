@@ -264,12 +264,13 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                     case "7":
                     case "8":
                     case "9":
-                        SendKeys.Send(e.Result.Semantics.Value.ToString());
+                        //SendKeys.Send(e.Result.Semantics.Value.ToString());
                         Console.WriteLine("\n Letter : " + e.Result.Semantics.Value.ToString());
                         break;
 
                     case "DOT":
-                        SendKeys.Send(".");
+                        //SendKeys.Send(".");
+                        Console.WriteLine("\n Letter : .");
                         break;
                 }
             }
