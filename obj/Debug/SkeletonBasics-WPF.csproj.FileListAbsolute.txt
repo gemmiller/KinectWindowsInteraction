@@ -47,3 +47,6 @@ C:\My Stuff\School\2012-2013\Independent Research\V3\obj\Debug\SkeletonBasics-WP
 E:\My School\High School\2012-2013\Independent Research\V3\bin\Debug\SkeletonBasics-WPF.exe.config
 E:\My School\High School\2012-2013\Independent Research\V3\obj\Debug\SkeletonBasics-WPF.exe
 E:\My School\High School\2012-2013\Independent Research\V3\obj\Debug\SkeletonBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\2014\Kinneract\bin\Debug\SkeletonBasics-WPF.exe.config
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.exe
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.pdb

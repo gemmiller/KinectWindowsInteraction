@@ -92,7 +92,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     private DrawingImage imageSource;
                 #endregion
                 #region "Custom"
-                    private VJoyDemo.VJoy m_vjoy = null;
                     public float [,]LeftData = new float[10,3];
                     public float [,]RightData = new float[10, 3];
                     public Vector4 [] HandPos = new Vector4[2];
@@ -107,7 +106,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     public Vector4[] CalData = new Vector4[11];
                     public Vector[] Bounds = new Vector[6];
                     public int CalState = -1;
-                    public int clock=0;
+                    public int heartbeat=0;
                     const int hTop = 0;
                     const int hBottom = 1;
                     const int hLeft = 3;
@@ -130,9 +129,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             // Execute startup tasks
             private void WindowLoaded(object sender, RoutedEventArgs e)
             {
-                m_vjoy = new VJoyDemo.VJoy();
-                m_vjoy.Initialize();
-                m_vjoy.Update(0);
                 checkBoxSeatedMode.IsChecked = true;
                 #region "Start Kinect"
                 this.drawingGroup = new DrawingGroup();                         // Create the drawing group we'll use for drawing
@@ -151,12 +147,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 if (null != this.sensor)                                        //If there is a sensor
                 {
                     myKinect = this.sensor;
-                    //TransformSmoothParameters Smooth = new TransformSmoothParameters();
-                    //    Smooth.Smoothing = 0.7f;
-                    //    Smooth.Correction = 0.3f;
-                    //    Smooth.Prediction = 0.5f;
-                    //    Smooth.JitterRadius = 1.0f;
-                    //    Smooth.MaxDeviationRadius = 1.0f;
                     myKinect.SkeletonStream.Enable();                                // Turn on the skeleton stream to receive skeleton frames
                     myKinect.SkeletonFrameReady += this.SensorSkeletonFrameReady;    // Add an event handler to be called whenever there is new color frame data
                     myKinect.DepthStream.Range = DepthRange.Near;                    //Attempt to set depth range...     
@@ -181,8 +171,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             /// Execute shutdown tasks
             private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
             {
-                //ADDED!!!!
-                m_vjoy.Shutdown();
                 //ADDED!!!
                 if (null != this.sensor)
                     {this.sensor.Stop();}
@@ -315,14 +303,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             public void Execute(DrawingContext dc)
             {
                 #region "Avoid Timeout"
-                    clock += 1;
-                    lblClock.Text = "Clock: " + clock.ToString();
-                    if (clock > 1000)
+                    heartbeat += 1;
+                    lblClock.Text = "Clock: " + heartbeat.ToString();
+                    if (heartbeat > 1000)
                     {
-                        m_vjoy = new VJoyDemo.VJoy();
-                        m_vjoy.Initialize();
-                        m_vjoy.Update(0);
-                        clock = 0;
+                        heartbeat = 0;
                     }
                 #endregion
                 Vector4 coord;
@@ -431,16 +416,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     if (OneHandedMode == true)
                     {
                         #region "One Handed Driving"
-                            m_vjoy.SetXAxis(0, (byte)0);
-                            m_vjoy.SetYAxis(0, (byte)0);
                             if (tVector[LHand].Z < (zthreashold[LHand]-.15+(SpeedAdjust.Value/10)))
                             {
-                                //OBSOLETE
-                                    //float tmpRight = (float)Math.Round(((Math.Pow(tVector[LHand].Y,3)/16384)*0.7 + (float)(Math.Pow(tVector[LHand].X,3)/16384) ));
-                                    //float tmpLeft  = (float)Math.Round(((Math.Pow(tVector[LHand].Y,3)/16384)*0.7 - (float)(Math.Pow(tVector[LHand].X,3)/16384) ));//tVector[LHand].X)*.75);
-                                    //float tmpRight = (float)Math.Round(((Math.Pow(tVector[LHand].Y, 3) / (Math.Pow(128,2) * .7))*.75 - (Math.Pow(tVector[LHand].Y, 7) / (Math.Pow(128,6) * 1.6))) + ((Math.Pow(tVector[LHand].X, 3) / (Math.Pow(128,2) * .7)) - (Math.Pow(tVector[LHand].X, 7) / (Math.Pow(128,6) * 1.6)))*.6);
-                                    //float tmpLeft = (float)Math.Round(((Math.Pow(tVector[LHand].Y, 3) / (Math.Pow(128,2) * .7))*.75 - (Math.Pow(tVector[LHand].Y, 7) / (Math.Pow(128,6) * 1.6))) - ((Math.Pow(tVector[LHand].X, 3) / (Math.Pow(128,2) * .7)) - (Math.Pow(tVector[LHand].X, 7) / (Math.Pow(128,6) * 1.6)))*.6);
-                                //Speed
                                     float SpeedFactor = 0;    
                                     if (tVector[LHand].Y > 90)
                                         {SpeedFactor = (((tVector[LHand].Y - 90) *90)/ 38) + 38;}
@@ -473,11 +450,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                     if (tmpLeft < -127)
                                         {tmpLeft = -127;}
                                 //Set Joystick ValsVals
-                                    m_vjoy.SetYAxis(0, (byte)(256 - tmpRight));
-                                    m_vjoy.SetXAxis(0, (byte)(tmpLeft));
                             }
-                            //Send Joystick Changes
-                            m_vjoy.Update(0);
                         #endregion
                         #region "Arm"
                             if (Calibrated == true)
@@ -487,36 +460,28 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                 catch (Exception)
                                 { }
                                 //Set buttons to zero so they are only pressed if set recently (gets rid of ghosts)
-                                m_vjoy.SetButton(0, 0, false);
-                                m_vjoy.SetButton(0, 1, false);
-                                m_vjoy.SetButton(0, 2, false);
-                                m_vjoy.SetButton(0, 3, false);
-                                m_vjoy.SetButton(0, 4, false);
-                                m_vjoy.SetButton(0, 5, false);
                                 if (tVector[RHand].Z <= zthreashold[RHand] - 0.15 + (TurnAdjust.Value / 10))
                                 {
                                     //Arm
                                     if ((BoundsToJoy((float)Bounds[2].X) <= tVector[RHand].X) & (tVector[RHand].X <= BoundsToJoy((float)Bounds[5].X)))
                                     {
                                         if (tVector[RHand].Y <= -50)
-                                            {m_vjoy.SetButton(0, 0, true);}
+                                            {}//m_vjoy.SetButton(0, 0, true);}
                                         else if (tVector[RHand].Y <= -30)
-                                            {m_vjoy.SetButton(0, 1, true);}
+                                            {}//m_vjoy.SetButton(0, 1, true);}
                                         else if (tVector[RHand].Y >= 50)
-                                            {m_vjoy.SetButton(0, 3, true);}
+                                            {}//m_vjoy.SetButton(0, 3, true);}
                                         else if (tVector[RHand].Y >= 30)
-                                            {m_vjoy.SetButton(0, 2, true);}
+                                        { }//m_vjoy.SetButton(0, 2, true);}
                                     }
                                     //Batans
                                     BatonDispense.Foreground = Brushes.Green;
                                     if (tVector[RHand].X >= BoundsToJoy((float)Bounds[4].X))       //Extract
                                     {
-                                        m_vjoy.SetButton(0, 4, true);
                                         BatonDispense.Text = "Extract";
                                     }
                                     else if (tVector[RHand].X <= BoundsToJoy((float)Bounds[3].X))  //Dispense
-                                    {
-                                        m_vjoy.SetButton(0, 5, true);
+                                    {                                        
                                         BatonDispense.Text = "Dispense";
                                     }
                                     else
@@ -525,27 +490,25 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                 else
                                 { BatonDispense.Foreground = Brushes.Yellow; }
                                 //Send Arm Changes
-                                m_vjoy.Update(0);
                             }
                         #endregion
                     }
                     else
                     {
                         #region "Two Handed Driving"
-                            m_vjoy.SetYAxis(0, (byte)0);
-                            m_vjoy.SetXAxis(0, (byte)0);
-                            if (tVector[LHand].Z < zthreashold[LHand] - .15 + (SpeedAdjust.Value / 10))
-                                {float tmpRight = 0;
-                                 if (tVector[LHand].Y > 90)
-                                    {tmpRight = (((tVector[LHand].Y - 90) * 90) / 38) + 38; }
-                                 else if (tVector[LHand].Y > 24)
-                                    {tmpRight = (((tVector[LHand].Y - 24) * 38) / 66); }
-                                 else if (tVector[LHand].Y < -90)
-                                    {tmpRight = (((tVector[LHand].Y + 90) * 90) / 38) - 38; }
-                                 else if (tVector[LHand].Y < -24)
-                                    {tmpRight = (((tVector[LHand].Y + 24) * 38) / 66); }
-                                 tmpRight = (float)Math.Round(tmpRight);
-                                 m_vjoy.SetYAxis(0, (byte)(255 - (byte)tmpRight));}
+                        if (tVector[LHand].Z < zthreashold[LHand] - .15 + (SpeedAdjust.Value / 10))
+                        {
+                            float tmpRight = 0;
+                            if (tVector[LHand].Y > 90)
+                            { tmpRight = (((tVector[LHand].Y - 90) * 90) / 38) + 38; }
+                            else if (tVector[LHand].Y > 24)
+                            { tmpRight = (((tVector[LHand].Y - 24) * 38) / 66); }
+                            else if (tVector[LHand].Y < -90)
+                            { tmpRight = (((tVector[LHand].Y + 90) * 90) / 38) - 38; }
+                            else if (tVector[LHand].Y < -24)
+                            { tmpRight = (((tVector[LHand].Y + 24) * 38) / 66); }
+                            tmpRight = (float)Math.Round(tmpRight);
+                        }
                             if (tVector[RHand].Z < zthreashold[RHand]-.15+(SpeedAdjust.Value/10))
                                 {float tmpLeft = 0;
                                  if (tVector[LHand].Y > 90)
@@ -557,38 +520,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                  else if (tVector[LHand].Y < -24)
                                     {tmpLeft = (((tVector[LHand].Y + 24) * 38) / 66); }
                                  tmpLeft = (float)Math.Round(tmpLeft);
-                                 m_vjoy.SetXAxis(0, (byte)tmpLeft);}
-                            m_vjoy.Update(0);
+                            }
                         #endregion
                     }
-                    #region "Status Report"
-                        #region "Motor"
-                            if (m_vjoy.GetYAxis(0)>128)
-                                {lMotor.Value = 256+128-(int)m_vjoy.GetYAxis(0);}
-                            else
-                                {lMotor.Value = 128-(int)m_vjoy.GetYAxis(0); }
-                            if (m_vjoy.GetXAxis(0) > 128)
-                                {rMotor.Value = (int)m_vjoy.GetXAxis(0) - 128; }
-                            else
-                                {rMotor.Value = (int)m_vjoy.GetXAxis(0) + 128; }
-                        #endregion
-                        #region "Arm"
-                            if (m_vjoy.GetButton(0,0)==true)
-                                {Arm_sl.Background = Brushes.Orange;}
-                            else if (m_vjoy.GetButton(0,1)==true)
-                                {Arm_sl.Background = Brushes.Yellow;}
-                            else if (m_vjoy.GetButton(0,2)==true)
-                                {Arm_sl.Background = Brushes.Green;}
-                            else if (m_vjoy.GetButton(0,3)==true)
-                                {Arm_sl.Background = Brushes.LightGreen;}
-                            else
-                                {Arm_sl.Background = Brushes.Black;}
-                            if (m_vjoy.GetButton(0,4))
-                                {}
-                            if (m_vjoy.GetButton(0,5))
-                                {}
-                        #endregion  
-                    #endregion
                 }
                 public Vector4 []RawToJoy(Vector4 []tVector)  //convert from Meters to joystick value from 0 to 255
                 {
@@ -644,7 +578,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 public void Calibrate(string tString, int tHand, int tCorner, Vector4 tcoord, DrawingContext dc)
             {
                 DrawText(tcoord, tString,28, dc);
-                if (clock/20 > 10)
+                if (heartbeat/20 > 10)
                 {
                     CalState += 1; if (CalState > 9) { CalState = 0; }
                     CalData[CalState] = HandPos[tHand];
@@ -654,7 +588,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         Calibration[tHand, tCorner] = Average;
                         CalData = new Vector4[11];
                         CalState = -1;
-                        clock = 0;
+                        heartbeat = 0;
                         OpMode += 1;
                     }
                 }
@@ -723,7 +657,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     // Convert point to depth space.  
                     // We are not using depth directly, but we do want the points in our 640x480 output resolution.
-                    DepthImagePoint depthPoint = this.sensor.MapSkeletonPointToDepth(
+                    DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                                                                                      skelpoint,
                                                                                      DepthImageFormat.Resolution640x480Fps30);
                     return new Point(depthPoint.X, depthPoint.Y);
@@ -907,7 +841,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
             private void CalibrationMode_Click(object sender, RoutedEventArgs e)
             {
-                clock = 0;
+                heartbeat = 0;
                 OpMode = 1;
             }
             private void Capture_Click(object sender, RoutedEventArgs e)
