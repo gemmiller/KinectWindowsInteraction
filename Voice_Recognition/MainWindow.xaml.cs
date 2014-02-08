@@ -18,6 +18,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
     using Microsoft.Speech.AudioFormat;
     using Microsoft.Speech.Recognition;
     using Microsoft.Win32;
+    using System.Windows.Forms;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -211,6 +212,10 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.facebook.com");
                         break;
 
+                    case "IASTATE":
+                        System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.iastate.edu");
+                        break;
+
                     case "GOOGLE":
                         System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.google.com");
                         break;
@@ -224,7 +229,8 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         break;
 
                     case "A":
-                        System.Windows.Forms.SendKeys.Send("{F6}A");
+                        Console.WriteLine("\n" + e.Result.Semantics.Value.ToString());
+                        SendKeys.Send("A");
                         break;
                 }
             }

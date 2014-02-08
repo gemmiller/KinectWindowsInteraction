@@ -34,6 +34,13 @@
         </one-of>
       </item>
       <item>
+        <tag>IASTATE</tag>
+        <one-of>
+          <item> kinect i a state dot e d u </item>
+          <item> kinect to i a state dot e d u </item>
+        </one-of>
+      </item>
+      <item>
         <tag>CMD</tag>
         <one-of>
           <item> kinect to c m d </item>
@@ -202,6 +209,13 @@
           <tag>Z</tag>
           <one-of>
             <item> z </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>DOT</tag>
+          <one-of>
+            <item> dot </item>
+            <item> period </item>
           </one-of>
         </item>
       </item>

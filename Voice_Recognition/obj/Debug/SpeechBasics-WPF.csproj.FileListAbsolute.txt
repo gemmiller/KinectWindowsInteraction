@@ -9,3 +9,4 @@ C:\Users\sean\Documents\SpeechBasics-WPF\obj\Debug\Microsoft.Samples.Kinect.Spee
 C:\Users\sean\Documents\SpeechBasics-WPF\obj\Debug\SpeechBasics-WPF.csproj.GenerateResource.Cache
 C:\Users\sean\Documents\SpeechBasics-WPF\obj\Debug\SpeechBasics-WPF.exe
 C:\Users\sean\Documents\SpeechBasics-WPF\obj\Debug\SpeechBasics-WPF.pdb
+C:\Users\sean\Documents\SpeechBasics-WPF\obj\Debug\SpeechBasics-WPF.csprojResolveAssemblyReference.cache
