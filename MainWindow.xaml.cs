@@ -177,7 +177,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     {this.sensor.Stop();}
             }
         #endregion             
-
+        int identified = 0;
+        double LReach = 0;
+        double RReach = 0;
         #region "Skeleton Data Collection Smoothing"
             /// Event handler for Kinect sensor's SkeletonFrameReady event
             private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -197,14 +199,17 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     if (skeletons.Length != 0)
                     {
                         //Has the skeleton Disapeared
-                        Boolean identified = false;
+                        identified -= 1;
                         foreach(Skeleton skel in skeletons){
-                            if(skel.TrackingId == closestID)
-                                identified = true;
+                            txtTracking.Text = skel.TrackingId.ToString();
+                            if (skel.TrackingId == closestID)
+                                identified += 1;
                         }
                         //Grab the closest person
-                        if (ReCapture == true && identified == false)
+                        txtIdentified.Text = identified.ToString();
+                        if (ReCapture == true || identified < -30)
                         {
+                            identified = 0;
                             if (myKinect.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
                                 myKinect.SkeletonStream.AppChoosesSkeletons = true;             
                             float closestDistance = 10000f;                                             // Start with a far enough distance
@@ -233,12 +238,26 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                 dc.DrawEllipse(this.centerPointBrush, null, this.SkeletonPointToScreen(skel.Position),
                                 BodyCenterThickness, BodyCenterThickness);
                             }
-                            Joint LeftHand  = skel.Joints.Where(s => s.JointType == JointType.HandLeft).ElementAt(0);
-                            Joint LeftElbow = skel.Joints.Where(s => s.JointType == JointType.ElbowLeft).ElementAt(0);
-                            Joint RightHand = skel.Joints.Where(s => s.JointType == JointType.HandRight).ElementAt(0);
-                            Joint RightElbow = skel.Joints.Where(s => s.JointType == JointType.ElbowRight).ElementAt(0);
-                            double LReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X,2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y,2));
-                            double RReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X, 2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y, 2));
+                            Joint LeftHand = new Joint();
+                            IEnumerable<Joint> LeftHands = skel.Joints.Where(s => s.JointType == JointType.HandLeft).Where(s => s.TrackingState == JointTrackingState.Tracked);
+                            if (LeftHands.Count() > 0)
+                                LeftHand = LeftHands.ElementAt(0);
+                            Joint LeftElbow = new Joint();
+                            IEnumerable<Joint> LeftElbows = skel.Joints.Where(s => s.JointType == JointType.ElbowLeft).Where(s => s.TrackingState == JointTrackingState.Tracked);
+                            if (LeftElbows.Count() > 0)
+                                LeftElbow = LeftElbows.ElementAt(0);
+                            Joint RightHand = new Joint();
+                            IEnumerable<Joint> RightHands = skel.Joints.Where(s => s.JointType == JointType.HandRight).Where(s => s.TrackingState == JointTrackingState.Tracked);
+                            if (RightHands.Count() > 0)
+                                RightHand = RightHands.ElementAt(0);
+                            Joint RightElbow = new Joint();
+                            IEnumerable<Joint> RightElbows = skel.Joints.Where(s => s.JointType == JointType.ElbowRight).Where(s => s.TrackingState == JointTrackingState.Tracked);
+                            if (RightElbows.Count() > 0)
+                                RightElbow = RightElbows.ElementAt(0);
+                            if(!(LeftElbow.Equals(new Joint()) && LeftHand.Equals(new Joint())))
+                                LReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X,2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y,2));
+                            if(!(RightElbow.Equals(new Joint()) && RightHand.Equals(new Joint())))
+                                RReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X, 2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y, 2));
                             txtLeftHand.Text = LReach.ToString();
                             txtRightHand.Text = RReach.ToString();
                             //foreach (Joint tjoint in skel.Joints)

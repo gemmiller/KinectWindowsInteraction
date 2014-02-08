@@ -135,7 +135,9 @@
                 <StackPanel Margin="100 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="lblClock" Text="Clock:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
                     <TextBlock x:Name="txtLeftHand" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
-                    <TextBlock x:Name="txtRightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>                    
+                    <TextBlock x:Name="txtRightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="txtIdentified" Text="Identified:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="txtTracking" Text="Identified:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
                 </StackPanel>                
             </StackPanel>
         </DockPanel>

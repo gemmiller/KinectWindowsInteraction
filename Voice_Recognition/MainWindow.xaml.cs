@@ -221,7 +221,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         break;
 
                     case "CMD":
-                        System.Diagnostics.Process.Start(@"C:\Windows\WinSxS\wow64_microsoft-windows-commandprompt_31bf3856ad364e35_6.2.9200.16384_none_ee2b1873d8818161\cmd.exe", "/K cd C:\\");
+                        System.Diagnostics.Process.Start(@"C:\Windows\System32\cmd.exe", "/K cd C:\\");
                         break;
 
                     case "NOTEPAD":
