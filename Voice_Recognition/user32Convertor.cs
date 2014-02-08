@@ -1,4 +1,5 @@
 ﻿/*
+ * 
  * hypnodok #elitepvpers quakenet
  * 8.5.08
  */
@@ -9,8 +10,6 @@ using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Threading;
 
 //Renamed Namespace for readability was afkvalley - Geoff Miller
@@ -177,7 +176,8 @@ namespace WinAPIWrapper
         /// <param name="button">which button to press (left middle up)</param>
         public static void MouseClick(string button)
         {
-            switch (button)
+
+            switch (button.ToLower())
             {
                 case "left":
                     mouse_event((uint)MouseEventFlags.LEFTDOWN, 0, 0, 0, 0);
@@ -194,9 +194,27 @@ namespace WinAPIWrapper
             }
         }
 
-        public static void MouseScroll()
+        /// <summary>
+        /// Start Draging the mouse.
+        /// </summary>
+        public static void MouseStartDrag()
         {
-            throw new NotImplementedException();
+            mouse_event((uint)MouseEventFlags.LEFTDOWN, 0, 0, 0, 0);
+        }
+
+        
+        /// <summary>
+        /// Stop draging the mouse.
+        /// </summary>
+        public static void MouseStopDrag()
+        {
+            mouse_event((uint)MouseEventFlags.LEFTUP, 0, 0, 0, 0);
+        }
+
+        public static void MouseScroll(int distance, int direction)
+        {
+
+            mouse_event((uint)MouseEventFlags.WHEEL, 0, 0, (uint)(distance*direction), 0);
         }
         /// <summary>
         /// sends a mouseclick to a window state=1 lifts it up state=0 presses it down
@@ -332,25 +350,6 @@ namespace WinAPIWrapper
         /// makes a screenshot of your current desktop and returns a bitmap
         /// </summary>
         /// <returns></returns>
-        public static Bitmap CreateScreenshot()
-        {
-            IntPtr hWnd = GetDesktopWindow();
-            IntPtr hSorceDC = GetWindowDC(hWnd);
-            RECT rect = new RECT();
-            GetWindowRect(hWnd, ref rect);
-            int width = rect.right - rect.left;
-            int height = rect.bottom - rect.top;
-            IntPtr hDestDC = CreateCompatibleDC(hSorceDC);
-            IntPtr hBitmap = CreateCompatibleBitmap(hSorceDC, width, height);
-            IntPtr hObject = SelectObject(hDestDC, hBitmap);
-            BitBlt(hDestDC, 0, 0, width, height, hSorceDC, 0, 0, SRCCOPY);
-            SelectObject(hDestDC, hObject);
-            DeleteDC(hDestDC);
-            ReleaseDC(hWnd, hSorceDC);
-            Bitmap screenshot = Bitmap.FromHbitmap(hBitmap);
-            DeleteObject(hBitmap);
-            return screenshot;
-        }
     }
 
 

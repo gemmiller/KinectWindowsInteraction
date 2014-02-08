@@ -27,6 +27,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         Justification = "In a full-fledged application, the SpeechRecognitionEngine object should be properly disposed. For the sake of simplicity, we're omitting that code in this sample.")]
     public partial class MainWindow : Window
     {
+        #region "Variables"
         /// <summary>
         /// Resource key for medium-gray-colored brush.
         /// </summary>
@@ -52,7 +53,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// </summary>
         private bool typing = false;
 
-
+        #endregion 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -270,7 +271,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             }
             else
             {
-                
+
                 if (e.Result.Confidence >= ConfidenceThreshold)
                 {
 
@@ -284,6 +285,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                             typing = false;
                             break;
                     }
+                }
             }
         }
 
