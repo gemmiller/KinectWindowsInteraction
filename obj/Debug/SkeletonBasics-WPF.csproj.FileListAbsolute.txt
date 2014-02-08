@@ -73,3 +73,6 @@ C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.g.resources
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\obj\Debug\Microsoft.Samples.Kinect.SkeletonBasics.Properties.Resources.resources
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.csproj.GenerateResource.Cache
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\bin\Debug\SkeletonBasics-WPF.exe.config
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.exe
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.pdb
