@@ -1,0 +1,148 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Microsoft.Samples.Kinect.SkeletonBasics.MainWindow"
+        Title="Skeleton Basics" Height="735" Width="861" Loaded="WindowLoaded" Closing="WindowClosing" Background="#FF873D3D">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
+        <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f"/>
+        <SolidColorBrush x:Key="KinectBlueBrush" Color="#ff00BCF2"/>
+        <Style TargetType="{x:Type Image}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+        <Style TargetType="{x:Type CheckBox}" x:Key="SquareCheckBox" >
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" Background="Transparent">
+                                <Grid x:Name="SquareCheckBoxChecked">
+                                    <Image x:Name="CheckedNormal" Source="Images\CheckedNormal.png" Stretch="None" HorizontalAlignment="Center"/>
+                                    <Image x:Name="CheckedHover" Source="Images\CheckedHover.png" Stretch="None" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                                </Grid>
+                                <Grid x:Name="SquareCheckBoxUnchecked" Visibility="Collapsed">
+                                    <Image x:Name="UncheckedNormal" Source="Images\UncheckedNormal.png" Stretch="None" HorizontalAlignment="Center"/>
+                                    <Image x:Name="UncheckedHover" Source="Images\UncheckedHover.png" Stretch="None" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                                </Grid>
+                                <TextBlock x:Name="SquareCheckBoxText" Text="{TemplateBinding Content}" TextAlignment="Left"  VerticalAlignment="Center" Foreground="{StaticResource KinectPurpleBrush}" FontSize="15"  Margin="9,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="SquareCheckBoxChecked"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="SquareCheckBoxUnchecked"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="CheckedNormal"/>
+                                <Setter Property="Visibility" Value="Collapsed" TargetName="UncheckedNormal"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="CheckedHover"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="UncheckedHover"/>
+                                <Setter Property="Foreground" Value="{StaticResource KinectBlueBrush}" TargetName="SquareCheckBoxText"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="layoutGrid" Margin="10 0 10 0" Width="auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto" MinHeight="75"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Margin="0 0 0 20">
+            <Image DockPanel.Dock="Left" Source="Images\Logo.png" Stretch="None" Margin="0 10 0 5"/>
+            <TextBlock DockPanel.Dock="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{DynamicResource KinectBlueBrush}" FontFamily="Segoe UI" FontSize="22" FontWeight="Bold"><Run Text="Skeleton Basics"/></TextBlock>
+            <Image Grid.Column="1" Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="30,0,0,5"/>
+        </DockPanel>
+        <DockPanel Grid.Row="1" Margin="0 0 0 0">
+            <Image x:Name="Image" DockPanel.Dock="Left" Source="Images\Status.png"/>
+            <StackPanel DockPanel.Dock="Right" Background="#FF3C3C3C" Width="194" HorizontalAlignment="Right">                  
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Left">                    
+                    <StackPanel Grid.Column="1" Grid.Row="0" Width="140" Margin="15,0,0,0" DockPanel.Dock="Right">
+                        <TextBlock x:Name="Midpoint" Text="Midpoint:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
+                        <TextBlock x:Name="Distance" Text="Distance:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
+                        <TextBlock x:Name="Conversion" Text="Conversion:      " FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
+                        <TextBlock x:Name="Out" Text="Output:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}"  Height="24"/>
+                        <TextBlock x:Name="BatonDispense" Text="Dispense:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="0,100,0,0" >                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Motor Output:" Margin="-45,0,-40,0" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" RenderTransformOrigin="0.5,0.5">
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="-90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <Slider Grid.Column="2" Grid.Row="1" x:Name="lMotor" Height="109" Maximum="256" Orientation="Vertical" Width="27" Value="128"/>
+                        <Slider Grid.Column="2" Grid.Row="1" x:Name="rMotor" Height="109" Maximum="256" Orientation="Vertical" Width="27" Value="128"/>
+                        <TextBlock Text="Arm:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" RenderTransformOrigin="0.5,0.5">
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="-90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <Slider x:Name="Arm_sl" Height="109" Maximum="200" Orientation="Vertical" Width="27" Value="100" Background="#00000000"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="0,20,0,0">
+                    <TextBlock Text="Turn Adjust:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" HorizontalAlignment="Center"/>
+                    <Slider Grid.Column="2" Grid.Row="1" x:Name="TurnAdjust" Height="27" Maximum="128" Orientation="Horizontal" Width="109" Value="0" Minimum="-128"/>
+                    <TextBlock Text="Speed Adjust:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" HorizontalAlignment="Center"/>
+                    <Slider Grid.Column="2" Grid.Row="1" x:Name="SpeedAdjust" Height="27" Maximum="128" Orientation="Horizontal" Width="109" Value="0" Minimum="-128"/>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+        <DockPanel Grid.Row="2">
+            <StackPanel Orientation="Horizontal" Background="#FFA4A4A4" RenderTransformOrigin="0.5,0.5">
+                <StackPanel.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="1" ScaleX="1"/>
+                        <SkewTransform AngleY="0" AngleX="0"/>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </StackPanel.RenderTransform>
+                <Button x:Name="CalibrationMode" Content="Calibrate"  VerticalAlignment="Center" Click="CalibrationMode_Click" Background="#FF3C3C3C" Foreground="{DynamicResource KinectBlueBrush}" FontSize="18" FontWeight="Bold" Margin="10,13,0,10" Height="52" Width="96">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
+                <StackPanel Margin="20,4,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <CheckBox x:Name="checkBoxSeatedMode" Content="Seated Mode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged" Style="{StaticResource SquareCheckBox}" Height="24"  IsChecked="False" FontWeight="Bold" Margin="0"/>
+                    <CheckBox x:Name="checkBoxOneHanded" Content="One Handed Mode" Checked="checkBoxOneHandedChanged" Unchecked="checkBoxOneHandedChanged" Style="{StaticResource SquareCheckBox}"  Height="24" IsChecked="False" FontWeight="Bold" Margin="0,5,0,0"/>
+                    <CheckBox x:Name="checkBoxShowBounds" Content="Show Bounds" Style="{StaticResource SquareCheckBox}"  Height="24" IsChecked="True" FontWeight="Bold" Margin="0,5,0,0"/>
+                </StackPanel>
+                <Button x:Name="Capture" Content="Capture"  VerticalAlignment="Center" Click="Capture_Click" Background="#FF3C3C3C" Foreground="{DynamicResource KinectBlueBrush}" FontSize="18" FontWeight="Bold" Margin="10,13,0,10" Height="52" Width="96">
+                    <Button.Effect>
+                        <DropShadowEffect/>
+                    </Button.Effect>
+                </Button>
+                <TextBlock x:Name="skelId" Text="ID:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24" Margin="20 0 0 0"/>
+                <StackPanel Margin="100 0 0 0" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblClock" Text="Clock:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="LeftHand" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="RightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>                    
+                </StackPanel>                
+            </StackPanel>
+        </DockPanel>
+        <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" x:Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}" Height="26">
+            <StatusBarItem Padding="0 0 0 10" Background="#FFA4A4A4">
+                <TextBlock x:Name="statusBarText" Margin="10,0,0,0" Foreground="{DynamicResource KinectPurpleBrush}"><Run Text="Click 'Seated' to change skeletal pipeline type!"/></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
