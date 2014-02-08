@@ -270,7 +270,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
-            const double ConfidenceThreshold = 0.8;
+            const double ConfidenceThreshold = 0.6;
 
             ClearRecognitionHighlights();
 
@@ -329,11 +329,18 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         case "GRAB":
                             WinAPIWrapper.WinAPI.MouseStartDrag();
                             break;
-
+                        case "TypeMicrosoft":
+                            WinAPIWrapper.WinAPI.ManagedSendKeys("Microsoft{ENTER}");
+                            break;
+                        case "TypeWeather":
+                            WinAPIWrapper.WinAPI.ManagedSendKeys("Ames Weather{ENTER}");
+                            break;
+                        case "TypeEnter":
+                            WinAPIWrapper.WinAPI.ManagedSendKeys("{ENTER}");
+                            break;
                         case "RELEASE":
                             WinAPIWrapper.WinAPI.MouseStopDrag();
                             break;
-
                         case "STARTTYPE":
                             typing = true;
                             break;

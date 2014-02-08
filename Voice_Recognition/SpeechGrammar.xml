@@ -2,6 +2,24 @@
   <rule id="rootRule">
     <one-of>
       <item>
+        <tag>TypeMicrosoft</tag>
+        <one-of>
+          <item> Type Microsoft </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>TypeEnter</tag>
+        <one-of>
+          <item>Enter</item>
+        </one-of>
+      </item>
+      <item>
+        <tag>TypeWeather</tag>
+        <one-of>
+          <item> Type Ames Weather</item>
+        </one-of>
+      </item>
+      <item>
         <tag>INTERNET</tag>
         <one-of>
           <item> kinect internet </item>
