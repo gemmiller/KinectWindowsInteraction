@@ -36,8 +36,8 @@
       <item>
         <tag>IASTATE</tag>
         <one-of>
-          <item> kinect i a state dot e d u </item>
-          <item> kinect to i a state dot e d u </item>
+          <item> kinect iowa state </item>
+          <item> kinect to iowa state </item>
         </one-of>
       </item>
       <item>
@@ -59,156 +59,216 @@
       <item>
         <tag>A</tag>
         <one-of>
-          <item> a </item>
+          <item> ay </item>
         </one-of>
       </item>
       <item>
         <tag>B</tag>
         <one-of>
-          <item> b </item>
+          <item> bee </item>
         </one-of>
       </item>
       <item>
         <tag>C</tag>
         <one-of>
-          <item> c </item>
+          <item> sea </item>
         </one-of>
         <item>
           <tag>D</tag>
           <one-of>
-            <item> d </item>
+            <item> dee </item>
           </one-of>
         </item>
         <item>
           <tag>E</tag>
           <one-of>
-            <item> e </item>
+            <item> ee </item>
           </one-of>
         </item>
         <item>
           <tag>F</tag>
           <one-of>
-            <item> f </item>
+            <item> eff </item>
           </one-of>
         </item>
         <item>
           <tag>G</tag>
           <one-of>
-            <item> g </item>
+            <item> gee </item>
           </one-of>
         </item>
         <item>
           <tag>H</tag>
           <one-of>
-            <item> h </item>
+            <item> aitch </item>
           </one-of>
         </item>
         <item>
           <tag>I</tag>
           <one-of>
-            <item> i </item>
+            <item> eye </item>
           </one-of>
         </item>
         <item>
           <tag>J</tag>
           <one-of>
-            <item> j </item>
+            <item> jay </item>
           </one-of>
         </item>
         <item>
           <tag>K</tag>
           <one-of>
-            <item> k </item>
+            <item> kay </item>
           </one-of>
         </item>
         <item>
           <tag>L</tag>
           <one-of>
-            <item> l </item>
+            <item> elle </item>
           </one-of>
         </item>
         <item>
           <tag>M</tag>
           <one-of>
-            <item> m </item>
+            <item> em </item>
           </one-of>
         </item>
         <item>
           <tag>N</tag>
           <one-of>
-            <item> n </item>
+            <item> en </item>
           </one-of>
         </item>
         <item>
           <tag>O</tag>
           <one-of>
-            <item> o </item>
+            <item> oh </item>
           </one-of>
         </item>
         <item>
           <tag>P</tag>
           <one-of>
-            <item> p </item>
+            <item> pea </item>
           </one-of>
         </item>
         <item>
           <tag>Q</tag>
           <one-of>
-            <item> q </item>
+            <item> queue </item>
           </one-of>
         </item>
         <item>
           <tag>R</tag>
           <one-of>
-            <item> r </item>
+            <item> are </item>
           </one-of>
         </item>
         <item>
           <tag>S</tag>
           <one-of>
-            <item> s </item>
+            <item> es </item>
           </one-of>
         </item>
         <item>
           <tag>T</tag>
           <one-of>
-            <item> t </item>
+            <item> tea </item>
           </one-of>
         </item>
         <item>
           <tag>U</tag>
           <one-of>
-            <item> u </item>
+            <item> you </item>
           </one-of>
         </item>
         <item>
           <tag>V</tag>
           <one-of>
-            <item> v </item>
+            <item> vee </item>
           </one-of>
         </item>
         <item>
           <tag>W</tag>
           <one-of>
-            <item> w </item>
+            <item> double you </item>
           </one-of>
         </item>
         <item>
           <tag>X</tag>
           <one-of>
-            <item> x </item>
+            <item> ex </item>
           </one-of>
         </item>
         <item>
           <tag>Y</tag>
           <one-of>
-            <item> y </item>
+            <item> why </item>
           </one-of>
         </item>
         <item>
           <tag>Z</tag>
           <one-of>
-            <item> z </item>
+            <item> zee </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>0</tag>
+          <one-of>
+            <item> zero </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>1</tag>
+          <one-of>
+            <item> one </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>2</tag>
+          <one-of>
+            <item> two </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>3</tag>
+          <one-of>
+            <item> three </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>4</tag>
+          <one-of>
+            <item> four </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>5</tag>
+          <one-of>
+            <item> five </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>6</tag>
+          <one-of>
+            <item> six </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>7</tag>
+          <one-of>
+            <item> seven </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>8</tag>
+          <one-of>
+            <item> eight </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>9</tag>
+          <one-of>
+            <item> nine </item>
           </one-of>
         </item>
         <item>
