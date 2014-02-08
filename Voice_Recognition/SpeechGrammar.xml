@@ -1,0 +1,210 @@
+﻿<grammar version="1.0" xml:lang="en-US" root="rootRule" tag-format="semantics/1.0-literals" xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="rootRule">
+    <one-of>
+      <item>
+        <tag>INTERNET</tag>
+        <one-of>
+          <item> kinect internet </item>
+          <item> kinect internet explorer </item>
+          <item> kinect i e </item>
+          <item> kinect to internet</item>
+          <item> kinect to internet explorer</item>
+          <item> kinect to i e</item>
+        </one-of>
+      </item>
+      <item>
+        <tag>CHROME</tag>
+        <one-of>
+          <item> kinect chrome </item>
+          <item> kinect to chrome</item>
+        </one-of>
+      </item>
+      <item>
+        <tag>FACEBOOK</tag>
+        <one-of>
+          <item> kinect facebook </item>
+          <item> kinect to facebook </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>GOOGLE</tag>
+        <one-of>
+          <item> kinect google </item>
+          <item> kinect to google </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>CMD</tag>
+        <one-of>
+          <item> kinect to c m d </item>
+          <item> kinect to command prompt </item>
+          <item> kinect to command </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>NOTEPAD</tag>
+        <one-of>
+          <item> kinect to notepad</item>
+          <item> kinect to note </item>
+          <item> kinect to notes </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>A</tag>
+        <one-of>
+          <item> a </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>B</tag>
+        <one-of>
+          <item> b </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>C</tag>
+        <one-of>
+          <item> c </item>
+        </one-of>
+        <item>
+          <tag>D</tag>
+          <one-of>
+            <item> d </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>E</tag>
+          <one-of>
+            <item> e </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>F</tag>
+          <one-of>
+            <item> f </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>G</tag>
+          <one-of>
+            <item> g </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>H</tag>
+          <one-of>
+            <item> h </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>I</tag>
+          <one-of>
+            <item> i </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>J</tag>
+          <one-of>
+            <item> j </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>K</tag>
+          <one-of>
+            <item> k </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>L</tag>
+          <one-of>
+            <item> l </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>M</tag>
+          <one-of>
+            <item> m </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>N</tag>
+          <one-of>
+            <item> n </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>O</tag>
+          <one-of>
+            <item> o </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>P</tag>
+          <one-of>
+            <item> p </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>Q</tag>
+          <one-of>
+            <item> q </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>R</tag>
+          <one-of>
+            <item> r </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>S</tag>
+          <one-of>
+            <item> s </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>T</tag>
+          <one-of>
+            <item> t </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>U</tag>
+          <one-of>
+            <item> u </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>V</tag>
+          <one-of>
+            <item> v </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>W</tag>
+          <one-of>
+            <item> w </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>X</tag>
+          <one-of>
+            <item> x </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>Y</tag>
+          <one-of>
+            <item> y </item>
+          </one-of>
+        </item>
+        <item>
+          <tag>Z</tag>
+          <one-of>
+            <item> z </item>
+          </one-of>
+        </item>
+      </item>
+    </one-of>
+  </rule>
+</grammar>

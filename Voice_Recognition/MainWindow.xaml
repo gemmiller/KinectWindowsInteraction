@@ -1,0 +1,56 @@
+﻿<Window x:Class="Microsoft.Samples.Kinect.SpeechBasics.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Open A Browser" Height="600" Width="600"
+        Loaded="WindowLoaded" Closing="WindowClosing">
+    <Window.Resources>
+        <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e"/>
+        <SolidColorBrush x:Key="LightGreyBrush" Color="#ffd2d2d2"/>
+        <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f"/>
+        <Style TargetType="{x:Type Image}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10,10,186,141">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="67*"/>
+            <RowDefinition Height="36*"/>
+            <RowDefinition Height="302*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Margin="0,0,10,10">
+            <Image DockPanel.Dock="Left" Source="Images\Logo.png" Stretch="Fill" Height="32" Width="81" HorizontalAlignment="Left" Margin="0 10 0 5"/>
+            <Image Grid.Column="1" Source="Images\Status.png" Stretch="None" Margin="0 0 0 5" Width="196" RenderTransformOrigin="1.438,0.524"/>
+        </DockPanel>
+        <TextBlock Grid.Row="2" HorizontalAlignment="Right" FontSize="16" Margin="0,13,92,37" Foreground="{StaticResource MediumGreyBrush}" Width="240">
+            <Run Text="Commands:"/>
+            <LineBreak/>
+            <Run Text=" "/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to "/>
+            <Run Text="Internet"/>
+            <Run Text=" &quot;"/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to Chrome &quot;"/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to Google &quot;"/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to Facebook &quot;"/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to Command Prompt &quot;"/>
+            <LineBreak/>
+            <Run Text="&quot; Kinect to Notepad &quot;"/>
+            <LineBreak/>
+            <Run Text=" Any Letter"/>
+            <LineBreak/>
+            <Run Text=" Period or Dot"/>
+        </TextBlock>
+        <StatusBar Grid.Row="3" Height="23" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}" Grid.RowSpan="2">
+            <StatusBarItem Padding="0">
+                <TextBlock Name="statusBarText"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
