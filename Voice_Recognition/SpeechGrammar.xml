@@ -56,6 +56,20 @@
           <item> kinect to notes </item>
         </one-of>
       </item>
+      <item>
+        <tag>STARTTYPE</tag>
+        <one-of>
+          <item> start type</item>
+          <item> start to type </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>ENDTYPE</tag>
+        <one-of>
+          <item> end type </item>
+          <item> end typing </item>
+        </one-of>
+      </item>
     </one-of>
   </rule>
 </grammar>
