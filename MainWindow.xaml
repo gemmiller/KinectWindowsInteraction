@@ -134,8 +134,8 @@
                 <TextBlock x:Name="skelId" Text="ID:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24" Margin="20 0 0 0"/>
                 <StackPanel Margin="100 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="lblClock" Text="Clock:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
-                    <TextBlock x:Name="LeftHand" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
-                    <TextBlock x:Name="RightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>                    
+                    <TextBlock x:Name="txtLeftHand" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="txtRightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>                    
                 </StackPanel>                
             </StackPanel>
         </DockPanel>

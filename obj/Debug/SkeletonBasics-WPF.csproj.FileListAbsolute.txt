@@ -50,3 +50,13 @@ E:\My School\High School\2012-2013\Independent Research\V3\obj\Debug\SkeletonBas
 E:\Programming\VISUAL STUDIO\2014\Kinneract\bin\Debug\SkeletonBasics-WPF.exe.config
 E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.exe
 E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\2014\Kinneract\bin\Debug\SkeletonBasics-WPF.exe
+E:\Programming\VISUAL STUDIO\2014\Kinneract\bin\Debug\SkeletonBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.csprojResolveAssemblyReference.cache
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\MainWindow.baml
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\MainWindow.g.cs
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\App.g.cs
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF_MarkupCompile.cache
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.g.resources
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\Microsoft.Samples.Kinect.SkeletonBasics.Properties.Resources.resources
+E:\Programming\VISUAL STUDIO\2014\Kinneract\obj\Debug\SkeletonBasics-WPF.csproj.GenerateResource.Cache

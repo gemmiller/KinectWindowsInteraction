@@ -116,6 +116,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     bool Calibrated = false;
                     public KinectSensor myKinect;
                     public bool ReCapture = false;
+                    int closestID = 0;
                 #endregion
             #endregion
         #endregion
@@ -195,16 +196,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     #region "Get Skeleton Data and Display"
                     if (skeletons.Length != 0)
                     {
-                        if (ReCapture == true)
+                        //Has the skeleton Disapeared
+                        Boolean identified = false;
+                        foreach(Skeleton skel in skeletons){
+                            if(skel.TrackingId == closestID)
+                                identified = true;
+                        }
+                        //Grab the closest person
+                        if (ReCapture == true && identified == false)
                         {
-                            if (myKinect.SkeletonStream.AppChoosesSkeletons==false)
-                            {
-                                myKinect.SkeletonStream.AppChoosesSkeletons = true; // Ensure AppChoosesSkeletons is set
-                            }
-
-                            float closestDistance = 10000f; // Start with a far enough distance
-                            int closestID = 0;
-
+                            if (myKinect.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
+                                myKinect.SkeletonStream.AppChoosesSkeletons = true;             
+                            float closestDistance = 10000f;                                             // Start with a far enough distance
+                            closestID = 0;
                             foreach (Skeleton skeleton in skeletons.Where(s => s.TrackingState != SkeletonTrackingState.NotTracked))
                             {
                                 if (skeleton.Position.Z < closestDistance)
@@ -214,48 +218,43 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                 }
                             }
                             if (closestID > 0)
-                            {
-                                myKinect.SkeletonStream.ChooseSkeletons(closestID); // Track this skeleton
-                            }
+                                myKinect.SkeletonStream.ChooseSkeletons(closestID);                     // Track this skeleton
                             ReCapture = false;
                         }
                         foreach (Skeleton skel in skeletons)
                         {
-                            if (skel.TrackingId != 0)
-                            { skelId.Text = skel.TrackingId.ToString(); }
-                            //if (skel.TrackingId == 31)
+                            if (skel.TrackingId != 0)                                                   //Write Skeleton ID
+                                skelId.Text = skel.TrackingId.ToString();
+                            RenderClippedEdges(skel, dc);                                               //Render Clipped Edges
+                            if (skel.TrackingState == SkeletonTrackingState.Tracked)                    //If skeleton is tracked, show on screen
+                                this.DrawBonesAndJoints(skel, dc);
+                            else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)          //If only position of person not full skeleton
+                            {
+                                dc.DrawEllipse(this.centerPointBrush, null, this.SkeletonPointToScreen(skel.Position),
+                                BodyCenterThickness, BodyCenterThickness);
+                            }
+                            Joint LeftHand  = skel.Joints.Where(s => s.JointType == JointType.HandLeft).ElementAt(0);
+                            Joint LeftElbow = skel.Joints.Where(s => s.JointType == JointType.ElbowLeft).ElementAt(0);
+                            Joint RightHand = skel.Joints.Where(s => s.JointType == JointType.HandRight).ElementAt(0);
+                            Joint RightElbow = skel.Joints.Where(s => s.JointType == JointType.ElbowRight).ElementAt(0);
+                            double LReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X,2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y,2));
+                            double RReach = Math.Sqrt(Math.Pow(LeftHand.Position.X - LeftElbow.Position.X, 2) + Math.Pow(LeftHand.Position.Y - LeftElbow.Position.Y, 2));
+                            txtLeftHand.Text = LReach.ToString();
+                            txtRightHand.Text = RReach.ToString();
+                            //foreach (Joint tjoint in skel.Joints)
                             //{
-                                RenderClippedEdges(skel, dc);
-                                if (skel.TrackingState == SkeletonTrackingState.Tracked)
-                                    {this.DrawBonesAndJoints(skel, dc);}
-                                else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
-                                {
-                                    dc.DrawEllipse(
-                                    this.centerPointBrush,
-                                    null,
-                                    this.SkeletonPointToScreen(skel.Position),
-                                    BodyCenterThickness,
-                                    BodyCenterThickness);
-                                }
-                                foreach (Joint tjoint in skel.Joints)
-                                {
-                                    if (tjoint.JointType == JointType.HandLeft & (tjoint.TrackingState == JointTrackingState.Inferred | tjoint.TrackingState == JointTrackingState.Tracked))
-                                    {
-                                        Vector4 Average = Averaging(LeftData, JointToVector(tjoint));
-                                        DrawPoint(Average,this.centerPointBrush, BodyCenterThickness, dc);
-                                        HandPos[0] = Average;
-                                        DrawText(Average, "Joy 1\r\n(" + Average.X.ToString() + "," + Average.Y.ToString() + "," + Average.Z.ToString() + ")", 15, dc);
-                                        LeftHand.Text = "Left Hand: (" + Average.X.ToString() + ", " + Average.Y.ToString() + ", " + Average.Z.ToString() + ")";
-                                    }
-                                    if (tjoint.JointType == JointType.HandRight & (tjoint.TrackingState == JointTrackingState.Inferred | tjoint.TrackingState == JointTrackingState.Tracked))
-                                    {
-                                        Vector4 Average = Averaging(RightData, JointToVector(tjoint));
-                                        DrawPoint(Average, this.centerPointBrush, BodyCenterThickness, dc);
-                                        HandPos[1] = Average;
-                                        DrawText(Average, "Joy 2\r\n(" + Average.X.ToString() + "," + Average.Y.ToString() + "," + Average.Z.ToString() + ")", 15, dc);
-                                        RightHand.Text = "Right Hand: (" + Average.X.ToString() + ", " + Average.Y.ToString() + ", " + Average.Z.ToString() + ")";
-                                    }
-                                }
+                            //    if (tjoint.JointType == JointType.HandLeft & (tjoint.TrackingState == JointTrackingState.Inferred | tjoint.TrackingState == JointTrackingState.Tracked))
+                            //    {
+                            //        Vector4 Average = Averaging(LeftData, JointToVector(tjoint));
+                            //        DrawPoint(Average,this.centerPointBrush, BodyCenterThickness, dc);
+                            //        HandPos[0] = Average;
+                            //    }
+                            //    if (tjoint.JointType == JointType.HandRight & (tjoint.TrackingState == JointTrackingState.Inferred | tjoint.TrackingState == JointTrackingState.Tracked))
+                            //    {
+                            //        Vector4 Average = Averaging(RightData, JointToVector(tjoint));
+                            //        DrawPoint(Average, this.centerPointBrush, BodyCenterThickness, dc);
+                            //        HandPos[1] = Average;
+                            //    }
                             //}
                         }
                     }
