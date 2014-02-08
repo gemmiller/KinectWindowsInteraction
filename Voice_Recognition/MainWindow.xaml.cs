@@ -272,6 +272,10 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         //SendKeys.Send(".");
                         Console.WriteLine("\n Letter : .");
                         break;
+
+                    case "HELLO":
+                        WinAPIWrapper.WinAPI.ManagedSendKeys("hello");
+                        break;
                 }
             }
         }

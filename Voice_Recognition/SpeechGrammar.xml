@@ -278,6 +278,12 @@
             <item> period </item>
           </one-of>
         </item>
+        <item>
+          <tag>HELLO</tag>
+          <one-of>
+            <item> type hello </item>
+          </one-of>
+        </item>
       </item>
     </one-of>
   </rule>
