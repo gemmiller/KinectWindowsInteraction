@@ -61,48 +61,8 @@
         </DockPanel>
         <DockPanel Grid.Row="1" Margin="0 0 0 0">
             <Image x:Name="Image" DockPanel.Dock="Left" Source="Images\Status.png"/>
-            <StackPanel DockPanel.Dock="Right" Background="#FF3C3C3C" Width="194" HorizontalAlignment="Right">                  
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Left">                    
-                    <StackPanel Grid.Column="1" Grid.Row="0" Width="140" Margin="15,0,0,0" DockPanel.Dock="Right">
-                        <TextBlock x:Name="Midpoint" Text="Midpoint:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
-                        <TextBlock x:Name="Distance" Text="Distance:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
-                        <TextBlock x:Name="Conversion" Text="Conversion:      " FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
-                        <TextBlock x:Name="Out" Text="Output:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}"  Height="24"/>
-                        <TextBlock x:Name="BatonDispense" Text="Dispense:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24"/>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Margin="0,100,0,0" >                    
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="Motor Output:" Margin="-45,0,-40,0" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" RenderTransformOrigin="0.5,0.5">
-                            <TextBlock.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="-90"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </TextBlock.RenderTransform>
-                        </TextBlock>
-                        <Slider Grid.Column="2" Grid.Row="1" x:Name="lMotor" Height="109" Maximum="256" Orientation="Vertical" Width="27" Value="128"/>
-                        <Slider Grid.Column="2" Grid.Row="1" x:Name="rMotor" Height="109" Maximum="256" Orientation="Vertical" Width="27" Value="128"/>
-                        <TextBlock Text="Arm:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" RenderTransformOrigin="0.5,0.5">
-                            <TextBlock.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform/>
-                                    <SkewTransform/>
-                                    <RotateTransform Angle="-90"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </TextBlock.RenderTransform>
-                        </TextBlock>
-                        <Slider x:Name="Arm_sl" Height="109" Maximum="200" Orientation="Vertical" Width="27" Value="100" Background="#00000000"/>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Margin="0,20,0,0">
-                    <TextBlock Text="Turn Adjust:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" HorizontalAlignment="Center"/>
-                    <Slider Grid.Column="2" Grid.Row="1" x:Name="TurnAdjust" Height="27" Maximum="128" Orientation="Horizontal" Width="109" Value="0" Minimum="-128"/>
-                    <TextBlock Text="Speed Adjust:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectBlueBrush}" Height="24" HorizontalAlignment="Center"/>
-                    <Slider Grid.Column="2" Grid.Row="1" x:Name="SpeedAdjust" Height="27" Maximum="128" Orientation="Horizontal" Width="109" Value="0" Minimum="-128"/>
+            <StackPanel DockPanel.Dock="Right" Background="#FF3C3C3C" Width="194" HorizontalAlignment="Right">                                                  
+                <StackPanel Margin="0,20,0,0">               
                 </StackPanel>
             </StackPanel>
         </DockPanel>
@@ -116,15 +76,8 @@
                         <TranslateTransform/>
                     </TransformGroup>
                 </StackPanel.RenderTransform>
-                <Button x:Name="CalibrationMode" Content="Calibrate"  VerticalAlignment="Center" Click="CalibrationMode_Click" Background="#FF3C3C3C" Foreground="{DynamicResource KinectBlueBrush}" FontSize="18" FontWeight="Bold" Margin="10,13,0,10" Height="52" Width="96">
-                    <Button.Effect>
-                        <DropShadowEffect/>
-                    </Button.Effect>
-                </Button>
                 <StackPanel Margin="20,4,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <CheckBox x:Name="checkBoxSeatedMode" Content="Seated Mode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged" Style="{StaticResource SquareCheckBox}" Height="24"  IsChecked="False" FontWeight="Bold" Margin="0"/>
-                    <CheckBox x:Name="checkBoxOneHanded" Content="One Handed Mode" Checked="checkBoxOneHandedChanged" Unchecked="checkBoxOneHandedChanged" Style="{StaticResource SquareCheckBox}"  Height="24" IsChecked="False" FontWeight="Bold" Margin="0,5,0,0"/>
-                    <CheckBox x:Name="checkBoxShowBounds" Content="Show Bounds" Style="{StaticResource SquareCheckBox}"  Height="24" IsChecked="True" FontWeight="Bold" Margin="0,5,0,0"/>
                 </StackPanel>
                 <StackPanel Margin="10 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="skelId" Text="ID:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24" Margin="20 0 0 0"/>
@@ -133,8 +86,8 @@
                 </StackPanel>
                 <StackPanel Margin="50 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="lblClock" Text="Clock:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
-                    <TextBlock x:Name="txtLeftHand" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
-                    <TextBlock x:Name="txtRightHand" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="txtPositionX" Text="Left Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
+                    <TextBlock x:Name="txtPositionY" Text="Right Hand:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>
                 </StackPanel>
                 <StackPanel Margin="50 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="txtReachLabel" Text="Reach:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24"/>

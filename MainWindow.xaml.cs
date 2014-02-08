@@ -92,28 +92,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     private DrawingImage imageSource;
                 #endregion
                 #region "Custom"
-                    public float [,]LeftData = new float[10,3];
-                    public float [,]RightData = new float[10, 3];
-                    public Vector4 [] HandPos = new Vector4[2];
-                    public bool OneHandedMode = false;
-                    public float []zthreashold = {(float)0.85,(float)0.85};
-                    public int index = 0;
-                    public int OpMode = 0;                                                                  //Used to delineate between driving and calibration mode.  1 = calibration, 0 = driving
-                    public Vector4[,] Calibration = new Vector4[2,4];
-                    public Vector4[] CalMidpoints = new Vector4[2];
-                    public Vector4[] CalDistance = new Vector4[2];
-                    //public Vector4[] CalOffset = new Vector4[2];
-                    public Vector4[] CalData = new Vector4[11];
-                    public Vector[] Bounds = new Vector[6];
-                    public int CalState = -1;
                     public int heartbeat=0;
-                    const int hTop = 0;
-                    const int hBottom = 1;
-                    const int hLeft = 3;
-                    const int hRight = 2;
-                    const int LHand = 0;
-                    const int RHand = 1;
-                    bool Calibrated = false;
                     public KinectSensor myKinect;
                     int closestID = 0;
                 #endregion
@@ -184,7 +163,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         List<Joint> RightElbow = new List<Joint>();
         List<Joint> RightShoulder = new List<Joint>();
         List<Joint> CenterShoulder = new List<Joint>();
-        Joint Anchor = new Joint();
         double LReach = 0;
         double LTravel = 0;
         double LDirection = 0;
@@ -193,6 +171,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         double RDirection = 0;
         double OffsetX;
         double OffsetY;
+        int RPositionX;
+        int RPositionY;
         #region "Skeleton Data Collection Smoothing"
             /// Event handler for Kinect sensor's SkeletonFrameReady event
             private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -222,6 +202,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         txtIdentified.Text = identified.ToString();
                         if (identified < -30)
                         {
+                            LeftHand.Clear();
+                            RightHand.Clear();
+                            LeftElbow.Clear();
+                            RightElbow.Clear();
+                            LeftShoulder.Clear();
+                            RightShoulder.Clear();
                             RReach = 0;
                             identified = 0;
                             if (myKinect.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
@@ -273,10 +259,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                     OffsetX = RightShoulder.Last().Position.X - CenterShoulder.Last().Position.X;
                                     OffsetY = RightShoulder.Last().Position.Y - CenterShoulder.Last().Position.Y;
                                 }
-                                double RPositionX = (RightHand.Last().Position.X - (CenterShoulder.Last().Position.X+OffsetX))/((4.0/3.0)*RReach);
-                                double RPositionY = -((RightHand.Last().Position.Y - (CenterShoulder.Last().Position.Y+OffsetY)) - RReach)/((8.0/5.0)*RReach);
-                                txtLeftHand.Text = RPositionX.ToString();
-                                txtRightHand.Text = RPositionY.ToString();
+                                RPositionX = (int)Math.Max(Math.Min((RightHand.Last().Position.X - (CenterShoulder.Last().Position.X + OffsetX)) / ((4.0 / 3.0) * RReach) * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width),0);
+                                RPositionY = (int)Math.Max(Math.Min(-((RightHand.Last().Position.Y - (CenterShoulder.Last().Position.Y + OffsetY)) - RReach) / ((8.0 / 5.0) * RReach) * System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height),0);
+                                if(RightHand.Last().Position.Z < (RightShoulder.Last().Position.Z-((1.0/2.0)*RReach)))
+                                    WinAPIWrapper.WinAPI.MouseMove(RPositionX, RPositionY);
+                                txtPositionX.Text = RPositionX.ToString();
+                                txtPositionY.Text = RPositionY.ToString();
                                 //txtRightHand.Text = RightHand.Last().Position.X.ToString() + " , " + RightHand.Last().Position.Y.ToString();
                             }
                             txtLReach.Text = LReach.ToString();
@@ -288,7 +276,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     #endregion
                     // prevent drawing outside of our render area
                     this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-                    Execute(dc);
+                    heartbeat += 1;
+                    lblClock.Text = "Clock: " + heartbeat.ToString();
+                    if (heartbeat > 1000)
+                    {
+                        heartbeat = 0;
+                    }
                 }
             }
             private void AddJoints(List<Joint> JointData,JointCollection JointRaw, JointType JointDef)
@@ -301,393 +294,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     JointData.Remove(JointData.First());
                 }
             }
-            private Vector4 Averaging(float[,] Data, Vector4 tVector)
-            {
-                Data[index, 0] = tVector.X;
-                Data[index, 1] = tVector.Y;
-                Data[index, 2] = tVector.Z;
-                index += 1;
-                if (index > 9)
-                { index = 0; }
-                float[] Average = new float[3];
-                for (int j = 0; j < 3; j++)
-                {
-                    for (int i = 0; i < 10; i++)
-                    {
-                        Average[j] += Data[i, j];
-                    }
-                    Average[j] /= 10;
-                    int[] extremes = { 0, 0, 0 };
-                    for (int i = 0; i < 10; i++)
-                    {
-                        if (Math.Abs(Average[j] - Data[i, j]) > Math.Abs(Average[j] - Data[extremes[0], j]))
-                        {
-                            extremes[0] = i;
-                        }
-                    }
-                    Average[j] *= 10;
-                    Average[j] -= Data[extremes[0], j];
-                    Average[j] /= 9;
-                    Average[j] = ((float)Math.Round(Average[j], 3));
-                }
-                Vector4 vAverage = ArraytoVector(Average);
-                return vAverage;
-            }
-        #endregion
-
-        #region "Interpretation Execution (Calibration, and Joystick routines)"
-            public void Execute(DrawingContext dc)
-            {
-                #region "Avoid Timeout"
-                    heartbeat += 1;
-                    lblClock.Text = "Clock: " + heartbeat.ToString();
-                    if (heartbeat > 1000)
-                    {
-                        heartbeat = 0;
-                    }
-                #endregion
-                Vector4 coord;
-                switch (OpMode)
-                {
-                    //Uses default Skeleton Zero (defined in meters)
-                    case 0:
-                        SendJoyVals(RawToJoy(HandPos));
-                        break;
-                    #region "Calibration Points"
-                        case 1:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Left Hand:\r\nTop Threshold", 0, 0, coord, dc);
-                            break;
-                        case 2:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Left Hand:\r\nBottom Threshold", 0, 1, coord, dc);
-                            break;
-                        case 3:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Left Hand:\r\nLeft Threshold", 0, 3, coord, dc);
-                            break;
-                        case 4:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Left Hand:\r\nRight Threshold", 0, 2, coord, dc);
-                            break;
-                        case 5:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Right Hand:\r\nTop Threshold", 1, 0, coord, dc);
-                            break;
-                        case 6:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Right Hand:\r\nBottom Threshold", 1, 1, coord, dc);
-                            break;
-                        case 7:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Right Hand:\r\nLeft Threshold", 1, 3, coord, dc);
-                            break;
-                        case 8:
-                            coord = ListToVector(0, 0, 0);
-                            Calibrate("Right Hand:\r\nRight Threshold", 1, 2, coord, dc);
-                            break;
-                    #endregion
-                    #region "Calibration Calculations"
-                        case 9:
-                            CalMidpoints[0].X = (Calibration[0,hRight].X+Calibration[0,hLeft].X)/2;
-                            CalMidpoints[1].X = (Calibration[1,hRight].X+Calibration[1,hLeft].X)/2;
-
-                            CalMidpoints[0].Y = (Calibration[0,hTop].Y+Calibration[0,hBottom].Y)/2;
-                            CalMidpoints[1].Y = (Calibration[1,hTop].Y+Calibration[1,hBottom].Y)/2;
-                            Midpoint.Text = "<" + CalMidpoints[0].X.ToString() + "," + CalMidpoints[0].Y.ToString() + "> <" + CalMidpoints[0].X.ToString() + "," + CalMidpoints[0].Y.ToString() + ">";
-
-                            CalDistance[0].X = (Calibration[0,hRight].X-Calibration[0,hLeft].X);
-                            CalDistance[1].X = (Calibration[1,hRight].X-Calibration[1,hLeft].X);
-
-                            CalDistance[0].Y = (Calibration[0,hTop].Y-Calibration[0,hBottom].Y);
-                            CalDistance[1].Y = (Calibration[1,hTop].Y-Calibration[1,hBottom].Y);
-                            Distance.Text = "<X=" + CalDistance[0].X.ToString() + " Y=" + CalDistance[0].Y.ToString()+"> <X=" + CalDistance[0].X.ToString() + " Y=" + CalDistance[0].Y.ToString()+">";
-                            Conversion.Text = "<X=" + (128 / CalDistance[0].X).ToString() + " Y=" + (128 / CalDistance[0].Y).ToString()+ "> <X=" + (128 / CalDistance[0].X).ToString() + " Y=" + (128 / CalDistance[0].Y).ToString()+ ">";
-                            for (int i = 0; i < 4; i++)
-                            {
-                                zthreashold[0] += Calibration[0, i].Z;
-                                zthreashold[1] += Calibration[1, i].Z;
-                            }
-                            zthreashold[0] /= 4;
-                            zthreashold[1] /= 4;
-                            Bounds[hTop].Y = Calibration[RHand, hTop].Y;
-                            Bounds[hBottom].Y = Calibration[RHand, hRight].Y;
-                            Bounds[2].X = CalMidpoints[RHand].X - ((40*CalDistance[1].X)/100); //OuterLeft
-                            Bounds[3].X = CalMidpoints[RHand].X - ((20*CalDistance[1].X)/100); //InnerLeft
-                            Bounds[4].X = CalMidpoints[RHand].X + ((20*CalDistance[1].X)/100); //InnerRight
-                            Bounds[5].X = CalMidpoints[RHand].X + ((40*CalDistance[1].X)/100); //OuterRight
-                            Calibrated = true;
-                            OpMode = 10;
-                            goto case 10;
-                    #endregion
-                    //Uses points from Calibration
-                    case 10:                        
-                        SendJoyVals(CalToJoy(HandPos));                        
-                        #region "Draw"
-                        if (checkBoxShowBounds.IsChecked == true)
-                            {
-                                foreach (Vector4 tVector in Calibration)
-                                    { DrawPoint(tVector, this.CalibrationBrush, 5, dc); }
-                                //??? Why are there no dots.... for the Right Hand
-                                DrawPoint(ListToVector((float)Bounds[hTop].Y, (float)Bounds[2].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hTop].Y, (float)Bounds[3].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hTop].Y, (float)Bounds[4].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hTop].Y, (float)Bounds[5].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hBottom].Y, (float)Bounds[2].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hBottom].Y, (float)Bounds[3].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hBottom].Y, (float)Bounds[4].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawPoint(ListToVector((float)Bounds[hBottom].Y, (float)Bounds[5].X, (float)zthreashold[1]), this.BoundBrush, 3, dc);
-                                DrawLine(ListToVector((float)Bounds[2].X, (float)Bounds[hTop].Y, zthreashold[1]), ListToVector((float)Bounds[2].X, (float)Bounds[hBottom].Y, zthreashold[1]), dc);
-                                DrawLine(ListToVector((float)Bounds[3].X, (float)Bounds[hTop].Y, zthreashold[1]), ListToVector((float)Bounds[3].X, (float)Bounds[hBottom].Y, zthreashold[1]), dc);
-                                DrawLine(ListToVector((float)Bounds[4].X, (float)Bounds[hTop].Y, zthreashold[1]), ListToVector((float)Bounds[4].X, (float)Bounds[hBottom].Y, zthreashold[1]), dc);
-                                DrawLine(ListToVector((float)Bounds[5].X, (float)Bounds[hTop].Y, zthreashold[1]), ListToVector((float)Bounds[5].X, (float)Bounds[hBottom].Y, zthreashold[1]), dc);
-                            }
-                        #endregion
-                        break;
-                }
-            }
-            #region "Joystick Routines"
-                public void SendJoyVals(Vector4 []tVector)
-                {
-                    if (OneHandedMode == true)
-                    {
-                        #region "One Handed Driving"
-                            if (tVector[LHand].Z < (zthreashold[LHand]-.15+(SpeedAdjust.Value/10)))
-                            {
-                                    float SpeedFactor = 0;    
-                                    if (tVector[LHand].Y > 90)
-                                        {SpeedFactor = (((tVector[LHand].Y - 90) *90)/ 38) + 38;}
-                                    else if (tVector[LHand].Y > 24)
-                                        {SpeedFactor = (((tVector[LHand].Y - 24) * 38) / 66);}
-                                    else if (tVector[LHand].Y < -90)
-                                        {SpeedFactor = (((tVector[LHand].Y + 90) * 90) / 38) - 38; }
-                                    else if (tVector[LHand].Y < -24)
-                                        {SpeedFactor = (((tVector[LHand].Y + 24) * 38 )/ 66);}
-                                //Turn
-                                    float TurnFactor = 0;
-                                    if (tVector[LHand].X > 90)
-                                        {TurnFactor = (((tVector[LHand].X - 90) * 28)/ 38) + 28;}
-                                    else if (tVector[LHand].X > 24)
-                                        {TurnFactor = (((tVector[LHand].X - 24) * 28) / 66);}
-                                    else if (tVector[LHand].X < -90)
-                                        {TurnFactor = (((tVector[LHand].X + 90) * 28 )/ 38) - 28;}
-                                    else if (tVector[LHand].X < -24)
-                                        {TurnFactor = (((tVector[LHand].X + 24) * 28) / 66);}
-                                //Calculate Motor Speed
-                                    float tmpRight = (float)Math.Round(SpeedFactor+TurnFactor);
-                                    float tmpLeft = (float)Math.Round(SpeedFactor-TurnFactor);
-                                //Truncate Speed to -127 by 127 range
-                                    if (tmpRight > 127)
-                                        {tmpRight = 127;}
-                                    if (tmpRight < -127)
-                                        {tmpRight = -127;}
-                                    if (tmpLeft > 127)
-                                        {tmpLeft = 127;}
-                                    if (tmpLeft < -127)
-                                        {tmpLeft = -127;}
-                                //Set Joystick ValsVals
-                            }
-                        #endregion
-                        #region "Arm"
-                            if (Calibrated == true)
-                            {
-                                try
-                                { Arm_sl.Value = tVector[RHand].Y; }
-                                catch (Exception)
-                                { }
-                                //Set buttons to zero so they are only pressed if set recently (gets rid of ghosts)
-                                if (tVector[RHand].Z <= zthreashold[RHand] - 0.15 + (TurnAdjust.Value / 10))
-                                {
-                                    //Arm
-                                    if ((BoundsToJoy((float)Bounds[2].X) <= tVector[RHand].X) & (tVector[RHand].X <= BoundsToJoy((float)Bounds[5].X)))
-                                    {
-                                        if (tVector[RHand].Y <= -50)
-                                            {}//m_vjoy.SetButton(0, 0, true);}
-                                        else if (tVector[RHand].Y <= -30)
-                                            {}//m_vjoy.SetButton(0, 1, true);}
-                                        else if (tVector[RHand].Y >= 50)
-                                            {}//m_vjoy.SetButton(0, 3, true);}
-                                        else if (tVector[RHand].Y >= 30)
-                                        { }//m_vjoy.SetButton(0, 2, true);}
-                                    }
-                                    //Batans
-                                    BatonDispense.Foreground = Brushes.Green;
-                                    if (tVector[RHand].X >= BoundsToJoy((float)Bounds[4].X))       //Extract
-                                    {
-                                        BatonDispense.Text = "Extract";
-                                    }
-                                    else if (tVector[RHand].X <= BoundsToJoy((float)Bounds[3].X))  //Dispense
-                                    {                                        
-                                        BatonDispense.Text = "Dispense";
-                                    }
-                                    else
-                                    { BatonDispense.Text = "Still"; }
-                                }
-                                else
-                                { BatonDispense.Foreground = Brushes.Yellow; }
-                                //Send Arm Changes
-                            }
-                        #endregion
-                    }
-                    else
-                    {
-                        #region "Two Handed Driving"
-                        if (tVector[LHand].Z < zthreashold[LHand] - .15 + (SpeedAdjust.Value / 10))
-                        {
-                            float tmpRight = 0;
-                            if (tVector[LHand].Y > 90)
-                            { tmpRight = (((tVector[LHand].Y - 90) * 90) / 38) + 38; }
-                            else if (tVector[LHand].Y > 24)
-                            { tmpRight = (((tVector[LHand].Y - 24) * 38) / 66); }
-                            else if (tVector[LHand].Y < -90)
-                            { tmpRight = (((tVector[LHand].Y + 90) * 90) / 38) - 38; }
-                            else if (tVector[LHand].Y < -24)
-                            { tmpRight = (((tVector[LHand].Y + 24) * 38) / 66); }
-                            tmpRight = (float)Math.Round(tmpRight);
-                        }
-                            if (tVector[RHand].Z < zthreashold[RHand]-.15+(SpeedAdjust.Value/10))
-                                {float tmpLeft = 0;
-                                 if (tVector[LHand].Y > 90)
-                                    {tmpLeft = (((tVector[LHand].Y - 90) * 90) / 38) + 38; }
-                                 else if (tVector[LHand].Y > 24)
-                                    {tmpLeft = (((tVector[LHand].Y - 24) * 38) / 66); }
-                                 else if (tVector[LHand].Y < -90)
-                                    {tmpLeft = (((tVector[LHand].Y + 90) * 90) / 38) - 38; }
-                                 else if (tVector[LHand].Y < -24)
-                                    {tmpLeft = (((tVector[LHand].Y + 24) * 38) / 66); }
-                                 tmpLeft = (float)Math.Round(tmpLeft);
-                            }
-                        #endregion
-                    }
-                }
-                public Vector4 []RawToJoy(Vector4 []tVector)  //convert from Meters to joystick value from 0 to 255
-                {
-                    tVector[0].X = (float)Math.Round(((tVector[0].X) * 255), 0);                
-                    tVector[1].X = (float)Math.Round(((tVector[1].X) * 255), 0);        
-        
-                    tVector[0].Y = (float)Math.Round(((tVector[0].Y) * 255), 0);                
-                    tVector[1].Y = (float)Math.Round(((tVector[1].Y) * 255), 0);                
-                    return tVector;
-                    //byte tByte = (byte)Math.Round(((tFloat) * 255), 0);                
-                    //return tByte;
-                }
-                public Vector4 []CalToJoy(Vector4 []tVector)
-                {
-                    //Left X
-                    if (tVector[LHand].X <= Calibration[LHand, hLeft].X)
-                        {tVector[LHand].X = -128;}
-                    else if (tVector[LHand].X >= Calibration[LHand, hRight].X)
-                        { tVector[LHand].X = 128; }
-                    else
-                        {tVector[LHand].X = (float)Math.Round(((tVector[LHand].X - CalMidpoints[LHand].X) *(256/CalDistance[LHand].X)), 0); }
-                    //Right X
-                    if (tVector[RHand].X <= Calibration[RHand, hLeft].X)
-                        {tVector[RHand].X = -128; }
-                    else if (tVector[RHand].X >= Calibration[RHand, hRight].X)
-                        {tVector[RHand].X = 128; }
-                    else
-                        {tVector[RHand].X = (float)Math.Round(((tVector[RHand].X - CalMidpoints[RHand].X)*(256/CalDistance[RHand].X)), 0); }
-                    //Left Y
-                    if (tVector[LHand].Y <= Calibration[LHand, hBottom].Y)
-                        {tVector[LHand].Y = -128; }
-                    else if (tVector[LHand].Y >= Calibration[LHand, hTop].Y)
-                        {tVector[LHand].Y = 128; }
-                    else
-                        {tVector[LHand].Y = (float)Math.Round(((tVector[LHand].Y - CalMidpoints[LHand].Y) * (256/CalDistance[LHand].Y)), 0); }
-                    //Right Y
-                    if (tVector[RHand].Y <= Calibration[RHand, hBottom].Y)
-                        {tVector[RHand].Y = -128; }
-                    else if (tVector[RHand].Y >= Calibration[RHand, hTop].Y)
-                        {tVector[RHand].Y = 128; }
-                    else
-                        {tVector[RHand].Y = (float)Math.Round(((tVector[RHand].Y - CalMidpoints[RHand].Y)*(256/CalDistance[RHand].Y)), 0); }
-                    Out.Text = tVector[LHand].X.ToString() + " : " + tVector[LHand].Y.ToString() + " - " +tVector[LHand].X.ToString() + " : " + tVector[LHand].Y.ToString();
-                    return tVector;
-                }
-                public float BoundsToJoy(float tBounds)
-                {
-                    float tfloat = (float)Math.Round(((tBounds - CalMidpoints[RHand].X)*(256/CalDistance[RHand].X)), 0);
-                    return tfloat;
-                }
-            #endregion
-            #region "Calibration"
-                public void Calibrate(string tString, int tHand, int tCorner, Vector4 tcoord, DrawingContext dc)
-            {
-                DrawText(tcoord, tString,28, dc);
-                if (heartbeat/20 > 10)
-                {
-                    CalState += 1; if (CalState > 9) { CalState = 0; }
-                    CalData[CalState] = HandPos[tHand];
-                    Vector4 Average = CalAverage(CalData);
-                    if (CalTollerance(CalData, Average) == true)
-                    {
-                        Calibration[tHand, tCorner] = Average;
-                        CalData = new Vector4[11];
-                        CalState = -1;
-                        heartbeat = 0;
-                        OpMode += 1;
-                    }
-                }
-            }
-                public Vector4 CalAverage(Vector4[] tCal)
-            {
-                Vector4 Average = new Vector4();
-                for (int j = 0; j < 10; j++)
-                {
-                    Average.X+=tCal[j].X;
-                    Average.Y+=tCal[j].Y;
-                    Average.Z+=tCal[j].Z;
-                }
-                Average.X /= 10;
-                Average.Y /= 10;
-                Average.Z /= 10;
-                return Average;
-            }
-                public bool CalTollerance(Vector4 []tCal, Vector4 Average)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    if (Math.Abs(tCal[j].X - Average.X) > 0.01)
-                    { return false; }
-                    if (Math.Abs(tCal[j].Y - Average.Y) > 0.01)
-                    { return false; }
-                }
-                return true;
-            }
-            #endregion
         #endregion
 
         #region "Drawing"
-            #region "custom"
-                public void DrawPoint(Vector4 Coord,Brush tbrush, double thick, DrawingContext dc)                             //Used to draw the position of the averaged values
-                {
-                    SkeletonPoint tSkel = new SkeletonPoint();
-                    tSkel = VectortoSkeleton(Coord);
-                    dc.DrawEllipse(
-                            this.centerPointBrush,
-                            null, this.SkeletonPointToScreen(tSkel),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
-                }
-                public void DrawLine(Vector4 Xa, Vector4 Xb, DrawingContext dc)
-                {
-                    Point tA = this.SkeletonPointToScreen(VectortoSkeleton(Xa));
-                    Point tB = this.SkeletonPointToScreen(VectortoSkeleton(Xb));
-                    dc.DrawLine(this.BoundPen,
-                        tA, tB);
-                }
-                public void DrawText(Vector4 Coord, string tString, int size, DrawingContext dc)                      //Used to draw Text in the skeleton Frame
-                {
-                    SkeletonPoint Draw = new SkeletonPoint();
-                    Draw = VectortoSkeleton(Coord);
-                    Typeface FontStyle = new Typeface("Calibri");
-                    FormattedText tText = new FormattedText(tString,
-                    System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight, FontStyle,
-                    emSize: size, foreground: centerPointBrush);
-                    dc.DrawText(tText, this.SkeletonPointToScreen(Draw));
-                }
-            #endregion
-            #region "default"
                 // Maps a SkeletonPoint to lie within our render space and converts to Point(point to map) Returns:mapped point
                 private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
                 {
@@ -814,41 +423,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                             new Rect(RenderWidth - ClipBoundsThickness, 0, ClipBoundsThickness, RenderHeight));
                     }
                 }
-            #endregion
-        #endregion
-
-        #region "Vector conversions"
-            public Vector4 ListToVector(float tx, float ty, float tz)
-            {
-                Vector4 tVector = new Vector4();
-                tVector.X=tx; tVector.Y=ty; tVector.Z=tz;
-                return tVector;
-            }
-            public Vector4 ArraytoVector(float []tArray)
-            {
-                Vector4 tVector = new Vector4();
-                tVector.X = tArray[0];
-                tVector.Y = tArray[1];
-                tVector.Z = tArray[2];
-                return tVector;
-            }
-            public float []VectortoArray(Vector4 tVector)
-            {
-                float []tArray = new float[3]; tArray[0]=tVector.X; tArray[1]=tVector.Y; tArray[2]=tVector.Z;
-                return tArray;
-            }
-            public SkeletonPoint VectortoSkeleton(Vector4 tVector)
-            {
-                SkeletonPoint tSkeleton = new SkeletonPoint();
-                tSkeleton.X = tVector.X; tSkeleton.Y = tVector.Y; tSkeleton.Z = tVector.Z;
-                return tSkeleton;
-            }
-            public Vector4 JointToVector(Joint tjoint)
-            {
-                Vector4 tVector = new Vector4();
-                tVector.X = tjoint.Position.X; tVector.Y = tjoint.Position.Y; tVector.Z = tjoint.Position.Z;
-                return tVector;
-            }
         #endregion
 
         #region "Form Control handlers"
@@ -867,23 +441,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         {myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;}
                 }
             }
-            private void checkBoxOneHandedChanged(object sender, RoutedEventArgs e)
-            {
-                System.Windows.Controls.CheckBox tCheckBox = (System.Windows.Controls.CheckBox)sender;
-                if (tCheckBox.IsChecked == true)
-                    {OneHandedMode = true;}
-                else
-                    {OneHandedMode = false;}
-            }
-            private void CalibrationMode_Click(object sender, RoutedEventArgs e)
-            {
-                heartbeat = 0;
-                OpMode = 1;
-            }
-            private void Capture_Click(object sender, RoutedEventArgs e)
-            {
-                //ReCapture = true;
-            }        
         #endregion
     }
 }
