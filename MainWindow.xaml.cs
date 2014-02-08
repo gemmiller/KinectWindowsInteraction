@@ -182,13 +182,17 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         List<Joint> LeftShoulder = new List<Joint>();
         List<Joint> RightHand = new List<Joint>();
         List<Joint> RightElbow = new List<Joint>();
-        List<Joint> LeftShoulder = new List<Joint>();
+        List<Joint> RightShoulder = new List<Joint>();
+        List<Joint> CenterShoulder = new List<Joint>();
+        Joint Anchor = new Joint();
         double LReach = 0;
         double LTravel = 0;
         double LDirection = 0;
         double RReach = 0;
         double RTravel = 0;
         double RDirection = 0;
+        double OffsetX;
+        double OffsetY;
         #region "Skeleton Data Collection Smoothing"
             /// Event handler for Kinect sensor's SkeletonFrameReady event
             private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -218,6 +222,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         txtIdentified.Text = identified.ToString();
                         if (identified < -30)
                         {
+                            RReach = 0;
                             identified = 0;
                             if (myKinect.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
                                 myKinect.SkeletonStream.AppChoosesSkeletons = true;             
@@ -248,20 +253,32 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                             }
                             AddJoints(LeftHand,skel.Joints,JointType.HandLeft);
                             AddJoints(LeftElbow, skel.Joints, JointType.ElbowLeft);
+                            AddJoints(LeftShoulder, skel.Joints, JointType.ShoulderLeft);
                             AddJoints(RightHand, skel.Joints, JointType.HandRight);
                             AddJoints(RightElbow, skel.Joints, JointType.ElbowRight);
+                            AddJoints(RightShoulder, skel.Joints, JointType.ShoulderRight);
+                            AddJoints(CenterShoulder, skel.Joints, JointType.ShoulderCenter);
                             if (LeftElbow.Count != 0 && LeftHand.Count != 0)
                             {
                                 LReach = Math.Sqrt(Math.Pow(LeftHand.Last().Position.X - LeftElbow.Last().Position.X, 2) + Math.Pow(LeftHand.Last().Position.Y - LeftElbow.Last().Position.Y, 2));
                                 LTravel = Math.Sqrt(Math.Pow(LeftHand.Last().Position.X - LeftHand.First().Position.X, 2) + Math.Pow(LeftHand.Last().Position.Y - LeftHand.First().Position.Y, 2));
-                                txtLeftHand.Text = LeftHand.Last().Position.X.ToString() + " , " + LeftHand.Last().Position.Y.ToString();
+                                //txtLeftHand.Text = LeftHand.Last().Position.X.ToString() + " , " + LeftHand.Last().Position.Y.ToString();
                             }
-                            if (RightElbow.Count != 0 && RightHand.Count != 0)
+                            if (RightElbow.Count != 0 && RightHand.Count != 0 && RightShoulder.Count !=0)
                             {
-                                RReach = Math.Sqrt(Math.Pow(RightHand.Last().Position.X - RightElbow.Last().Position.X, 2) + Math.Pow(RightHand.Last().Position.Y - RightElbow.Last().Position.Y, 2));
-                                RTravel = Math.Sqrt(Math.Pow(RightHand.Last().Position.X - RightHand.First().Position.X, 2) + Math.Pow(RightHand.Last().Position.Y - RightHand.First().Position.Y, 2));
-                                txtRightHand.Text = RightHand.Last().Position.X.ToString() + " , " + RightHand.Last().Position.Y.ToString();
-                            }                            
+                                if (RReach == 0)
+                                {
+                                    RReach = Math.Sqrt(Math.Pow(RightHand.Last().Position.X - RightElbow.Last().Position.X, 2) + Math.Pow(RightHand.Last().Position.Y - RightElbow.Last().Position.Y, 2));
+                                    RTravel = Math.Sqrt(Math.Pow(RightHand.Last().Position.X - RightHand.First().Position.X, 2) + Math.Pow(RightHand.Last().Position.Y - RightHand.First().Position.Y, 2));
+                                    OffsetX = RightShoulder.Last().Position.X - CenterShoulder.Last().Position.X;
+                                    OffsetY = RightShoulder.Last().Position.Y - CenterShoulder.Last().Position.Y;
+                                }
+                                double RPositionX = (RightHand.Last().Position.X - (CenterShoulder.Last().Position.X+OffsetX))/((4.0/3.0)*RReach);
+                                double RPositionY = -((RightHand.Last().Position.Y - (CenterShoulder.Last().Position.Y+OffsetY)) - RReach)/((8.0/5.0)*RReach);
+                                txtLeftHand.Text = RPositionX.ToString();
+                                txtRightHand.Text = RPositionY.ToString();
+                                //txtRightHand.Text = RightHand.Last().Position.X.ToString() + " , " + RightHand.Last().Position.Y.ToString();
+                            }
                             txtLReach.Text = LReach.ToString();
                             txtLTravel.Text = LTravel.ToString();                            
                             txtRReach.Text = RReach.ToString();
