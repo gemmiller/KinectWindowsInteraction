@@ -48,6 +48,12 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         private List<Span> recognitionSpans;
 
         /// <summary>
+        /// Signal to allow free typing characters.
+        /// </summary>
+        private bool typing = false;
+
+
+        /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
         public MainWindow()
@@ -184,8 +190,6 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             }
         }
 
-
-
         /// <summary>
         /// Handler for recognized speech events.
         /// </summary>
@@ -200,45 +204,51 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
 
             if (e.Result.Confidence >= ConfidenceThreshold)
             {
-                switch (e.Result.Semantics.Value.ToString())
-                {
-                    case "INTERNET":
-                        System.Diagnostics.Process.Start(@"C:\Program Files (x86)\Internet Explorer\iexplore.exe", "www.microsoft.com");
-                        break;
+               
+                    switch (e.Result.Semantics.Value.ToString())
+                    {
+                        case "INTERNET":
+                            System.Diagnostics.Process.Start(@"C:\Program Files (x86)\Internet Explorer\iexplore.exe", "www.microsoft.com");
+                            break;
 
-                    case "CHROME":
-                        System.Diagnostics.Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "www.microsoft.net");
-                        break;
+                        case "CHROME":
+                            System.Diagnostics.Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "www.microsoft.net");
+                            break;
 
-                    case "FACEBOOK":
-                        System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.facebook.com");
-                        break;
+                        case "FACEBOOK":
+                            System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.facebook.com");
+                            break;
 
-                    case "IASTATE":
-                        System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.iastate.edu");
-                        break;
+                        case "IASTATE":
+                            System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.iastate.edu");
+                            break;
 
-                    case "GOOGLE":
-                        System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.google.com");
-                        break;
+                        case "GOOGLE":
+                            System.Diagnostics.Process.Start(GetSystemDefaultBrowser(), "www.google.com");
+                            break;
 
-                    case "CMD":
-                        System.Diagnostics.Process.Start(@"C:\Windows\System32\cmd.exe", "/K cd C:\\");
-                        break;
+                        case "CMD":
+                            System.Diagnostics.Process.Start(@"C:\Windows\System32\cmd.exe", "/K cd C:\\");
+                            break;
 
-                    case "NOTEPAD":
-                        System.Diagnostics.Process.Start(@"C:\Windows\notepad.exe");
-                        break;
+                        case "NOTEPAD":
+                            System.Diagnostics.Process.Start(@"C:\Windows\notepad.exe");
+                            break;
 
-                    case "DOT":
-                        WinAPIWrapper.WinAPI.ManagedSendKeys(".");
-                        break;
+                        case "DOT":
+                            WinAPIWrapper.WinAPI.ManagedSendKeys(".");
+                            break;
 
-                    default:
-                        WinAPIWrapper.WinAPI.ManagedSendKeys(e.Result.Text);
-                        break;
+                        case "STARTTYPE":
+                            typing = true;
+                            break;
+
+                        case "ENDTYPE":
+                            typing = false;
+                            break;
+                    }
                 }
-            }
+ 
         }
 
         internal string GetSystemDefaultBrowser()
@@ -284,6 +294,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         private void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)
         {
             ClearRecognitionHighlights();
+            WinAPIWrapper.WinAPI.ManagedSendKeys(e.Result.Text);
         }
     }
 }
