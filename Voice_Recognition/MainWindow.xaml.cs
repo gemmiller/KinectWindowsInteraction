@@ -202,9 +202,11 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
 
             ClearRecognitionHighlights();
 
-            if (e.Result.Confidence >= ConfidenceThreshold)
+            if (!typing)
             {
-               
+                if (e.Result.Confidence >= ConfidenceThreshold)
+                {
+
                     switch (e.Result.Semantics.Value.ToString())
                     {
                         case "INTERNET":
@@ -239,16 +241,50 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                             WinAPIWrapper.WinAPI.ManagedSendKeys(".");
                             break;
 
+                        case "LEFTCLICK":
+                            WinAPIWrapper.WinAPI.MouseClick("left");
+                            break;
+
+                        case "RIGHTCLICK":
+                            WinAPIWrapper.WinAPI.MouseClick("right");
+                            break;
+
+                        case "DOUBLECLICK":
+                            WinAPIWrapper.WinAPI.MouseClick("left");
+                            WinAPIWrapper.WinAPI.MouseClick("left");
+                            break;
+
+                        case "GRAB":
+                            WinAPIWrapper.WinAPI.MouseStartDrag();
+                            break;
+
+                        case "RELEASE":
+                            WinAPIWrapper.WinAPI.MouseStopDrag();
+                            break;
+
                         case "STARTTYPE":
                             typing = true;
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                
+                if (e.Result.Confidence >= ConfidenceThreshold)
+                {
+
+                    switch (e.Result.Semantics.Value.ToString())
+                    {
+                        case "PHRASE":
+                            System.Diagnostics.Process.Start(@"C:\Program Files (x86)\Internet Explorer\iexplore.exe", "www.microsoft.com");
                             break;
 
                         case "ENDTYPE":
                             typing = false;
                             break;
                     }
-                }
- 
+            }
         }
 
         internal string GetSystemDefaultBrowser()

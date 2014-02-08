@@ -60,7 +60,7 @@
         <tag>STARTTYPE</tag>
         <one-of>
           <item> start type</item>
-          <item> start to type </item>
+          <item> start typing </item>
         </one-of>
       </item>
       <item>
@@ -68,6 +68,36 @@
         <one-of>
           <item> end type </item>
           <item> end typing </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>LEFTCLICK</tag>
+        <one-of>
+          <item> left click </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>RIGHTCLICK</tag>
+        <one-of>
+          <item> right click </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DOUBLECLICK</tag>
+        <one-of>
+          <item> double click </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>GRAB</tag>
+        <one-of>
+          <item> grab </item>
+        </one-of>
+      </item>
+      <item>
+        <tag> RELEASE </tag>
+        <one-of>
+          <item> release </item>
         </one-of>
       </item>
     </one-of>
