@@ -15,7 +15,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
     using System.Runtime.InteropServices;
     using System.Deployment;
     using System.Windows.Threading;
-    using System.IO;
+    //using System.IO;
     using System.Windows;
     using System.Windows.Documents;//
     using System.Windows.Media;
@@ -32,9 +32,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         Justification = "In a full-fledged application, the SpeechRecognitionEngine object should be properly disposed. For the sake of simplicity, we're omitting that code in this sample.")]
     public partial class MainWindow : Window
     {
-        #region "Form Handelers"
         #region "Dimensions and Declarations"
-        #region "Constants"
         /// <summary>
         /// Width of output drawing
         /// </summary>
@@ -43,214 +41,54 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// Height of our output drawing
         /// </summary>
         private const float RenderHeight = 480.0f;
-        /// <summary>
-        /// Thickness of drawn joint lines
-        /// </summary>
-        private const double JointThickness = 3;
-        /// <summary>
-        /// Thickness of body center ellipse
-        /// </summary>
-        private const double BodyCenterThickness = 10;
-        /// <summary>
-        /// Thickness of clip edge rectangles
-        /// </summary>
-        private const double ClipBoundsThickness = 10;
-        #endregion
-        #region "Readonly Reference"
-        /// <summary>
-        /// Brush used to draw skeleton center point
-        /// </summary>
-        private readonly Brush centerPointBrush = Brushes.Blue;
-        /// <summary>
-        /// Brush used for drawing joints that are currently tracked
-        /// </summary>
-        private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-        /// <summary>
-        /// Brush used for drawing joints that are currently inferred
-        /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;
-        /// <summary>
-        /// Pen used for drawing bones that are currently tracked
-        /// </summary>
-        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
-        /// <summary>
-        /// Pen used for drawing bones that are currently inferred
-        /// </summary>        
-        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
-        //Custom
-        private readonly Brush CalibrationBrush = Brushes.Purple;
-        private readonly Brush BoundBrush = Brushes.Red;
-        private readonly Pen BoundPen = new Pen(Brushes.Red, 6);
-        #endregion
         #region "Variables"
         /// <summary>
         /// Resource key for medium-gray-colored brush.
         /// </summary>
         private const string MediumGreyBrushKey = "MediumGreyBrush";
+        private Kinect_Wrap kinectWrapper;
+        private Kinect_Drawing kinectDrawing;
+        private KinectSensor sensor;                    // Active Kinect sensor.
+        private SpeechRecognitionEngine speechEngine;   // Speech recognition engine using audio data from Kinect.
+        private List<Span> recognitionSpans;            // List of all UI span elements used to select recognized text.
+        private DrawingGroup drawingGroup;              // Drawing group for skeleton rendering output
+        private DrawingImage imageSource;               // Drawing image that we will display
 
-        /// <summary>
-        /// Active Kinect sensor.
-        /// </summary>
-        private KinectSensor sensor;
-        /// <summary>
-        /// Speech recognition engine using audio data from Kinect.
-        /// </summary>
-        private SpeechRecognitionEngine speechEngine;
-
-        /// <summary>
-        /// List of all UI span elements used to select recognized text.
-        /// </summary>
-        private List<Span> recognitionSpans;
-        /// <summary>
-        /// Drawing group for skeleton rendering output
-        /// </summary>
-        private DrawingGroup drawingGroup;
-        /// <summary>
-        /// Drawing image that we will display
-        /// </summary>
-        private DrawingImage imageSource;
-        /// <summary>
-        /// Signal to allow free typing characters.
-        /// </summary>
-        private bool typing = false;
-        #region "Custom"
-        public int heartbeat = 0;
-        public KinectSensor myKinect;
-        int closestID = 0;
-        #endregion
+        private bool typing = false;                    // Signal to allow free typing characters.
+        public int heartbeat = 0;                       //Application Heartbeat
+        int closestID = 0;                              //Determine Closest person
         #endregion 
         #endregion
-        /// <summary>
-        /// Initializes a new instance of the MainWindow class.
-        /// </summary>
-        public MainWindow()
+        public MainWindow()         // Initializes a new instance of the MainWindow class.
         {
             InitializeComponent();
         }
-
-        /// <summary>
-        /// Execute initialization tasks.
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        private void WindowLoaded(object sender, RoutedEventArgs e)
-        {
-            checkBoxSeatedMode.IsChecked = true;
-            #region "Start Kinect"
-                this.drawingGroup = new DrawingGroup();                         // Create the drawing group we'll use for drawing
-                this.imageSource = new DrawingImage(this.drawingGroup);         // Create an image source that we can use in our image control
-                Image.Source = this.imageSource;                                // Display the drawing using our image control
-
-                foreach (var potentialSensor in KinectSensor.KinectSensors)     // Look through all sensors and start the first connected one.
-                {                                                               // This requires that a Kinect is connected at the time of app startup.
-                    if (potentialSensor.Status == KinectStatus.Connected)       // To make your app robust against plug/unplug, 
-                    {                                                           // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
-                        this.sensor = potentialSensor;
-                        break;
-                    }
-                }
-
-                if (null != this.sensor)                                        //If there is a sensor
-                {
-                    myKinect = this.sensor;
-                    myKinect.SkeletonStream.Enable();                                // Turn on the skeleton stream to receive skeleton frames
-                    myKinect.SkeletonFrameReady += this.SensorSkeletonFrameReady;    // Add an event handler to be called whenever there is new color frame data
-                    myKinect.DepthStream.Range = DepthRange.Near;                    //Attempt to set depth range...     
-                    myKinect.SkeletonStream.EnableTrackingInNearRange = true;
-                    myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-                    try
-                    {
-                        myKinect.Start();                                    // Start the sensor!
-                    }
-                    catch (IOException)
-                    {
-                        myKinect = null;                                     //Error!
-                    }
-                }
-                if (null == this.sensor)
-                {
-                    this.statusBarText.Text = Properties.Resources.NoKinectReady;  //Throw Flag
-                }
-
-            #endregion
-
-            RecognizerInfo ri = GetKinectRecognizer();
-
-            if (null != ri)
-            {
-                recognitionSpans = new List<Span> { };
-
-                this.speechEngine = new SpeechRecognitionEngine(ri.Id);
-
-                // Create a grammar from grammar definition XML file.
-                using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.SpeechGrammar)))
-                {
-                    var g = new Grammar(memoryStream);
-                    speechEngine.LoadGrammar(g);
-                }
-
-                speechEngine.SpeechRecognized += SpeechRecognized;
-                speechEngine.SpeechRecognitionRejected += SpeechRejected;
-
-                // For long recognition sessions (a few hours or more), it may be beneficial to turn off adaptation of the acoustic model. 
-                // This will prevent recognition accuracy from degrading over time.
-                ////speechEngine.UpdateRecognizerSetting("AdaptationOn", 0);
-
-                speechEngine.SetInputToAudioStream(
-                    sensor.AudioSource.Start(), new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
-                speechEngine.RecognizeAsync(RecognizeMode.Multiple);
-            }
+        private void WindowLoaded(object sender, RoutedEventArgs e) // Execute initialization tasks.
+        {            
+            this.drawingGroup = new DrawingGroup();                         // Create the drawing group we'll use for drawing
+            this.imageSource = new DrawingImage(this.drawingGroup);         // Create an image source that we can use in our image control
+            Image.Source = this.imageSource;                                // Display the drawing using our image control
+            kinectWrapper = new Kinect_Wrap();                                      //KINECT_WRAPPER  
+            sensor = kinectWrapper.StartKinect(SensorSkeletonFrameReady);           //KINECT_WRAPPER
+            kinectDrawing = new Kinect_Drawing(sensor, RenderWidth, RenderHeight);  //KINECT_DRAWING
+            if (null == this.sensor)
+                this.statusBarText.Text = Properties.Resources.NoKinectReady;  //Throw Flag
             else
             {
-                this.statusBarText.Text = Properties.Resources.NoSpeechRecognizer;
+                recognitionSpans = new List<Span> { };
+                speechEngine = kinectWrapper.StartSpeech(SpeechRecognized, SpeechRejected); //KINECT_WRAPPER
+                if (null == speechEngine)
+                    this.statusBarText.Text = Properties.Resources.NoSpeechRecognizer;
             }
         }
-        /// <summary>
-        /// Execute uninitialization tasks.
-        /// </summary>
-        /// <param name="sender">object sending the event.</param>
-        /// <param name="e">event arguments.</param>
-        private void WindowClosing(object sender, CancelEventArgs e)
+        private void WindowClosing(object sender, CancelEventArgs e)    // Execute uninitialization tasks.
         {
-            if (null != this.sensor)
-            {
-                this.sensor.AudioSource.Stop();
-
-                this.sensor.Stop();
-                this.sensor = null;
-            }
-
-            if (null != this.speechEngine)
-            {
-                this.speechEngine.SpeechRecognized -= SpeechRecognized;
-                this.speechEngine.SpeechRecognitionRejected -= SpeechRejected;
-                this.speechEngine.RecognizeAsyncStop();
-            }
+            kinectWrapper.StopKinect(); //KINECT_WRAPPER
+            kinectWrapper.StopSpeech();
         }
-        #endregion
 
         #region "Speech Recognition"
-        /// <summary>
-        /// Gets the metadata for the speech recognizer (acoustic model) most suitable to
-        /// process audio from Kinect device.
-        /// </summary>
-        /// <returns>
-        /// RecognizerInfo if found, <code>null</code> otherwise.
-        /// </returns>
-        private static RecognizerInfo GetKinectRecognizer()
-        {
-            foreach (RecognizerInfo recognizer in SpeechRecognitionEngine.InstalledRecognizers())
-            {
-                string value;
-                recognizer.AdditionalInfo.TryGetValue("Kinect", out value);
-                if ("True".Equals(value, StringComparison.OrdinalIgnoreCase) && "en-US".Equals(recognizer.Culture.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return recognizer;
-                }
-            }
-            
-            return null;
-        }
+
         /// <summary>
         /// Remove any highlighting from recognition instructions.
         /// </summary>
@@ -262,17 +100,12 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                 span.FontWeight = FontWeights.Normal;
             }
         }
-        /// <summary>
-        /// Handler for recognized speech events.
-        /// </summary>
-        /// <param name="sender">object sending the event.</param>
-        /// <param name="e">event arguments.</param>
-        private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)       // Handler for recognized speech events.
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
             const double ConfidenceThreshold = 0.6;
 
-            ClearRecognitionHighlights();
+            //ClearRecognitionHighlights();
 
             if (!typing)
             {
@@ -407,7 +240,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// <param name="e">event arguments.</param>
         private void SpeechRejected(object sender, SpeechRecognitionRejectedEventArgs e)
         {
-            ClearRecognitionHighlights();
+            //ClearRecognitionHighlights();
             WinAPIWrapper.WinAPI.ManagedSendKeys(e.Result.Text);
         }
         #endregion
@@ -422,10 +255,8 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         List<Joint> CenterShoulder = new List<Joint>();
         double LReach = 0;
         double LTravel = 0;
-        double LDirection = 0;
         double RReach = 0;
         double RTravel = 0;
-        double RDirection = 0;
         double OffsetX; 
         double OffsetY;
         int RPositionX;
@@ -443,10 +274,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                     skeletonFrame.CopySkeletonDataTo(skeletons);
                 }
             }
-            using (DrawingContext dc = this.drawingGroup.Open())
-            {
-                // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+
                 #region "Get Skeleton Data and Display"
                 if (skeletons.Length != 0)
                 {
@@ -470,8 +298,8 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         RightShoulder.Clear();
                         RReach = 0;
                         identified = 0;
-                        if (myKinect.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
-                            myKinect.SkeletonStream.AppChoosesSkeletons = true;
+                        if (sensor.SkeletonStream.AppChoosesSkeletons == false)                   // Ensure AppChoosesSkeletons is set
+                            sensor.SkeletonStream.AppChoosesSkeletons = true;
                         float closestDistance = 10000f;                                             // Start with a far enough distance
                         closestID = 0;
                         foreach (Skeleton skeleton in skeletons.Where(s => s.TrackingState != SkeletonTrackingState.NotTracked))
@@ -483,20 +311,13 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                             }
                         }
                         if (closestID > 0)
-                            myKinect.SkeletonStream.ChooseSkeletons(closestID);                     // Track this skeleton
+                            sensor.SkeletonStream.ChooseSkeletons(closestID);                     // Track this skeleton
                     }
                     foreach (Skeleton skel in skeletons)
                     {
                         if (skel.TrackingId != 0)                                                   //Write Skeleton ID
                             skelId.Text = skel.TrackingId.ToString();
-                        RenderClippedEdges(skel, dc);                                               //Render Clipped Edges
-                        if (skel.TrackingState == SkeletonTrackingState.Tracked)                    //If skeleton is tracked, show on screen
-                            this.DrawBonesAndJoints(skel, dc);
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)          //If only position of person not full skeleton
-                        {
-                            dc.DrawEllipse(this.centerPointBrush, null, this.SkeletonPointToScreen(skel.Position),
-                            BodyCenterThickness, BodyCenterThickness);
-                        }
+                        kinectDrawing.DrawSkeleton(skel,this.drawingGroup); //KINECT_DRAWING
                         AddJoints(LeftHand, skel.Joints, JointType.HandLeft);
                         AddJoints(LeftElbow, skel.Joints, JointType.ElbowLeft);
                         AddJoints(LeftShoulder, skel.Joints, JointType.ShoulderLeft);
@@ -530,12 +351,9 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                         txtLReach.Text = LReach.ToString();
                         txtLTravel.Text = LTravel.ToString();
                         txtRReach.Text = RReach.ToString();
-                        txtRTravel.Text = RTravel.ToString();
-                    }
+                        txtRTravel.Text = RTravel.ToString();                    
                 }
                 #endregion
-                // prevent drawing outside of our render area
-                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                 heartbeat += 1;
                 lblClock.Text = "Clock: " + heartbeat.ToString();
                 if (heartbeat > 1000)
@@ -552,153 +370,6 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             while (JointData.Count > 10)
             {
                 JointData.Remove(JointData.First());
-            }
-        }
-        #endregion
-
-        #region "Drawing"
-        // Maps a SkeletonPoint to lie within our render space and converts to Point(point to map) Returns:mapped point
-        private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
-        {
-            // Convert point to depth space.  
-            // We are not using depth directly, but we do want the points in our 640x480 output resolution.
-            DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                                                                             skelpoint,
-                                                                             DepthImageFormat.Resolution640x480Fps30);
-            return new Point(depthPoint.X, depthPoint.Y);
-        }
-        // Draws a skeleton's bones and joints(skeleton to draw, drawing context to draw to)
-        private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
-        {
-            // Render Torso
-            this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
-            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
-
-            // Left Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
-
-            // Right Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
-            this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
-
-            // Left Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
-
-            // Right Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
-
-            // Render Joints
-            foreach (Joint joint in skeleton.Joints)
-            {
-                Brush drawBrush = null;
-
-                if (joint.TrackingState == JointTrackingState.Tracked)
-                {
-                    drawBrush = this.trackedJointBrush;
-                }
-                else if (joint.TrackingState == JointTrackingState.Inferred)
-                {
-                    drawBrush = this.inferredJointBrush;
-                }
-
-                if (drawBrush != null)
-                {
-                    drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
-                }
-            }
-        }
-        // Draws a bone line between two joints (skeleton to draw bones from, drawing context to draw to, joint to start drawing from, joint to end drawing at)
-        private void DrawBone(Skeleton skeleton, DrawingContext drawingContext, JointType jointType0, JointType jointType1)
-        {
-            Joint joint0 = skeleton.Joints[jointType0];
-            Joint joint1 = skeleton.Joints[jointType1];
-
-            // If we can't find either of these joints, exit
-            if (joint0.TrackingState == JointTrackingState.NotTracked ||
-                joint1.TrackingState == JointTrackingState.NotTracked)
-            {
-                return;
-            }
-
-            // Don't draw if both points are inferred
-            if (joint0.TrackingState == JointTrackingState.Inferred &&
-                joint1.TrackingState == JointTrackingState.Inferred)
-            {
-                return;
-            }
-
-            // We assume all drawn bones are inferred unless BOTH joints are tracked
-            Pen drawPen = this.inferredBonePen;
-            if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
-            {
-                drawPen = this.trackedBonePen;
-            }
-
-            drawingContext.DrawLine(drawPen, this.SkeletonPointToScreen(joint0.Position), this.SkeletonPointToScreen(joint1.Position));
-        }
-        // Draws indicators to show which edges are clipping skeleton data (skeleton to draw clipping information for, drawing context to draw to)
-        private static void RenderClippedEdges(Skeleton skeleton, DrawingContext drawingContext)
-        {
-            if (skeleton.ClippedEdges.HasFlag(FrameEdges.Bottom))
-            {
-                drawingContext.DrawRectangle(
-                    Brushes.Red,
-                    null,
-                    new Rect(0, RenderHeight - ClipBoundsThickness, RenderWidth, ClipBoundsThickness));
-            }
-
-            if (skeleton.ClippedEdges.HasFlag(FrameEdges.Top))
-            {
-                drawingContext.DrawRectangle(
-                    Brushes.Red,
-                    null,
-                    new Rect(0, 0, RenderWidth, ClipBoundsThickness));
-            }
-
-            if (skeleton.ClippedEdges.HasFlag(FrameEdges.Left))
-            {
-                drawingContext.DrawRectangle(
-                    Brushes.Red,
-                    null,
-                    new Rect(0, 0, ClipBoundsThickness, RenderHeight));
-            }
-
-            if (skeleton.ClippedEdges.HasFlag(FrameEdges.Right))
-            {
-                drawingContext.DrawRectangle(
-                    Brushes.Red,
-                    null,
-                    new Rect(RenderWidth - ClipBoundsThickness, 0, ClipBoundsThickness, RenderHeight));
-            }
-        }
-        #endregion
-
-        #region "Form Control handlers"
-        /// <summary>
-        /// Handles the checking or unchecking of the seated mode combo box
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        private void CheckBoxSeatedModeChanged(object sender, RoutedEventArgs e)
-        {
-            if (null != this.sensor)
-            {
-                if (this.checkBoxSeatedMode.IsChecked.GetValueOrDefault())
-                { myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated; }
-                else
-                { myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default; }
             }
         }
         #endregion

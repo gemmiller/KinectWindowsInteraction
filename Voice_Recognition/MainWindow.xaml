@@ -63,6 +63,7 @@
             <Image x:Name="Image" DockPanel.Dock="Left" Source="Images\Status.png"/>
             <StackPanel DockPanel.Dock="Right" Background="#FF3C3C3C" Width="194" HorizontalAlignment="Right">
                 <StackPanel Margin="0,20,0,0">
+                    
                 </StackPanel>
             </StackPanel>
         </DockPanel>
@@ -77,7 +78,7 @@
                     </TransformGroup>
                 </StackPanel.RenderTransform>
                 <StackPanel Margin="20,4,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <CheckBox x:Name="checkBoxSeatedMode" Content="Seated Mode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged" Style="{StaticResource SquareCheckBox}" Height="24"  IsChecked="False" FontWeight="Bold" Margin="0"/>
+                    <!--<CheckBox x:Name="checkBoxSeatedMode" Content="Seated Mode" Style="{StaticResource SquareCheckBox}" Height="24"  IsChecked="False" FontWeight="Bold" Margin="0"/>-->
                 </StackPanel>
                 <StackPanel Margin="10 0 0 0" VerticalAlignment="Center">
                     <TextBlock x:Name="skelId" Text="ID:" FontFamily="Segoe UI" FontSize="18" Foreground="{DynamicResource KinectPurpleBrush}" Height="24" Margin="20 0 0 0"/>
