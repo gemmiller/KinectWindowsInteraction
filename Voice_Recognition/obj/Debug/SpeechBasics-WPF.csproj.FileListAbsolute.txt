@@ -32,3 +32,5 @@ C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\Voice_Recognition\obj\Debug\
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\Voice_Recognition\bin\Debug\SpeechBasics-WPF.exe
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\Voice_Recognition\bin\Debug\SpeechBasics-WPF.pdb
 C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\Voice_Recognition\obj\Debug\SpeechBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\Voice_Recognition\bin\Debug\SpeechBasics-WPF.exe
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\Voice_Recognition\bin\Debug\SpeechBasics-WPF.pdb

@@ -76,3 +76,13 @@ C:\Users\Ryan\Source\Repos\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF
 E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\bin\Debug\SkeletonBasics-WPF.exe.config
 E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.exe
 E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\bin\Debug\SkeletonBasics-WPF.exe
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\bin\Debug\SkeletonBasics-WPF.pdb
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.csprojResolveAssemblyReference.cache
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\MainWindow.baml
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\MainWindow.g.cs
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\App.g.cs
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF_MarkupCompile.cache
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.g.resources
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\Microsoft.Samples.Kinect.SkeletonBasics.Properties.Resources.resources
+E:\Programming\VISUAL STUDIO\GIT REPOS\KinectWindowsInteraction\obj\Debug\SkeletonBasics-WPF.csproj.GenerateResource.Cache

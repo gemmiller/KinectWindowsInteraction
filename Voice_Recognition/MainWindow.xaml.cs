@@ -426,7 +426,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         double RReach = 0;
         double RTravel = 0;
         double RDirection = 0;
-        double OffsetX;
+        double OffsetX; 
         double OffsetY;
         int RPositionX;
         int RPositionY;
