@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Media;
 using Microsoft.Kinect;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Microsoft.Samples.Kinect.SpeechBasics
 {
@@ -19,11 +20,21 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// </summary>
         private float RenderHeight = 0;
         private KinectSensor sensor = null;
-        public Kinect_Drawing(KinectSensor sensor, float width, float height)
+        private DrawingGroup drawingGroup;
+        private DrawingImage imageSource;
+        private Image image;
+        public Kinect_Drawing(KinectSensor sensor, float width, float height, Image image)
         {
             RenderWidth = width;
             RenderHeight = height;
             this.sensor = sensor;
+            this.image = image;
+            // Create the drawing group we'll use for drawing
+            this.drawingGroup = new DrawingGroup();
+            // Create an image source that we can use in our image control
+            this.imageSource = new DrawingImage(this.drawingGroup);
+            // Display the drawing using our image control
+            this.image.Source = this.imageSource;
         }
         #region "Constants"
             /// <summary>
@@ -65,19 +76,27 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         private readonly Brush BoundBrush = Brushes.Red;
         private readonly Pen BoundPen = new Pen(Brushes.Red, 6);
         #endregion
-        public void DrawSkeleton(Skeleton skel,DrawingGroup drawingGroup)
+        public void DrawSkeleton(Skeleton[] skeletons)
         {
-            using (DrawingContext dc = drawingGroup.Open())
+            using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
                 dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-                RenderClippedEdges(skel, dc);                                               //Render Clipped Edges
-                if (skel.TrackingState == SkeletonTrackingState.Tracked)                    //If skeleton is tracked, show on screen
-                    DrawBonesAndJoints(skel, dc);
-                else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)          //If only position of person not full skeleton
+                //dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth - 10f, RenderHeight - 10f));
+                if (skeletons.Length != 0)
                 {
-                    dc.DrawEllipse(this.centerPointBrush, null, this.SkeletonPointToScreen(skel.Position),
-                    BodyCenterThickness, BodyCenterThickness);
+                    foreach (Skeleton skel in skeletons)
+                    {
+                        RenderClippedEdges(skel, dc);                                               //Render Clipped Edges
+
+                        if (skel.TrackingState == SkeletonTrackingState.Tracked)                    //If skeleton is tracked, show on screen
+                            DrawBonesAndJoints(skel, dc);
+                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)          //If only position of person not full skeleton
+                        {
+                            dc.DrawEllipse(this.centerPointBrush, null, this.SkeletonPointToScreen(skel.Position),
+                            BodyCenterThickness, BodyCenterThickness);
+                        }
+                    }
                 }
             }
             // prevent drawing outside of our render area
@@ -88,7 +107,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         {
             // Convert point to depth space.  
             // We are not using depth directly, but we do want the points in our 640x480 output resolution.
-            DepthImagePoint depthPoint = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
+            DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                                                                              skelpoint,
                                                                              DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);

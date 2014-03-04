@@ -22,6 +22,10 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         {
             skeletonFrameEvent = skeletonFrame;
             KinectSensor candidate = null;
+            // Look through all sensors and start the first connected one.
+            // This requires that a Kinect is connected at the time of app startup.
+            // To make your app robust against plug/unplug, 
+            // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit (See components in Toolkit Browser).
             foreach (var potentialSensor in KinectSensor.KinectSensors)     // Look through all sensors and start the first connected one.
             {                                                               // This requires that a Kinect is connected at the time of app startup.
                 if (potentialSensor.Status == KinectStatus.Connected)       // To make your app robust against plug/unplug, 
@@ -33,32 +37,34 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
 
             if (null != candidate)                                        //If there is a sensor
             {
-                myKinect = candidate;
-                myKinect.SkeletonStream.Enable();                                // Turn on the skeleton stream to receive skeleton frames
-                myKinect.SkeletonFrameReady += skeletonFrameEvent;    // Add an event handler to be called whenever there is new color frame data
-                myKinect.DepthStream.Range = DepthRange.Near;                    //Attempt to set depth range...     
-                myKinect.SkeletonStream.EnableTrackingInNearRange = true;
-                myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+                this.myKinect = candidate;
+                // Turn on the skeleton stream to receive skeleton frames
+                this.myKinect.SkeletonStream.Enable();
+                // Add an event handler to be called whenever there is new color frame data
+                this.myKinect.SkeletonFrameReady += skeletonFrameEvent;
+                //Attempt to set depth range...
+                this.myKinect.DepthStream.Range = DepthRange.Near;
+                this.myKinect.SkeletonStream.EnableTrackingInNearRange = true;
+                this.myKinect.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+                // Start the sensor!
                 try
                 {
-                    myKinect.Start();                                    // Start the sensor!
+                    this.myKinect.Start();                                    // Start the sensor!
                 }
                 catch (IOException)
                 {
-                    myKinect = null;                                     //Error!
+                    this.myKinect = null;                                     //Error!
                 }
             }
-            return myKinect;
+            return this.myKinect;
         }
         public void StopKinect()
         {
             if (null != myKinect)
-            {
-                myKinect.SkeletonFrameReady -= skeletonFrameEvent;
-                myKinect.AudioSource.Stop();
-
-                myKinect.Stop();
-                myKinect = null;
+            {                
+                this.myKinect.AudioSource.Stop();
+                this.myKinect.Stop();
+                this.myKinect.SkeletonFrameReady -= skeletonFrameEvent;
             }
         }
         public SpeechRecognitionEngine StartSpeech(EventHandler<SpeechRecognizedEventArgs> recognized, EventHandler<SpeechRecognitionRejectedEventArgs> rejected)
@@ -108,7 +114,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
 
         // Gets the metadata for the speech recognizer (acoustic model) most suitable to
         // process audio from Kinect device.
-        private static RecognizerInfo GetKinectRecognizer()
+        private RecognizerInfo GetKinectRecognizer()
         {
             foreach (RecognizerInfo recognizer in SpeechRecognitionEngine.InstalledRecognizers())
             {
