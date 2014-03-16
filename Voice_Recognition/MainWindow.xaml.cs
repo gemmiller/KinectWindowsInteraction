@@ -22,7 +22,9 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
     using Microsoft.Kinect;
     using System.Speech.Synthesis;
     using Microsoft.Speech.AudioFormat;//
+    //using System.Speech.AudioFormat;
     using Microsoft.Speech.Recognition;//
+    //using System.Speech.Recognition;
     using Microsoft.Win32;//
     using System.Windows.Forms;//
 
@@ -46,14 +48,12 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// <summary>
         /// Resource key for medium-gray-colored brush.
         /// </summary>
-        private const string MediumGreyBrushKey = "MediumGreyBrush";
+        //private const string MediumGreyBrushKey = "MediumGreyBrush";
         private Kinect_Wrap kinectWrapper;
         private Kinect_Drawing kinectDrawing;
         private KinectSensor sensor;                    // Active Kinect sensor.
         private SpeechRecognitionEngine speechEngine;   // Speech recognition engine using audio data from Kinect.
         private List<Span> recognitionSpans;            // List of all UI span elements used to select recognized text.
-        //private DrawingGroup drawingGroup;              // Drawing group for skeleton rendering output
-        //private DrawingImage imageSource;               // Drawing image that we will display
         private SpeechSynthesizer synth;
 
         private bool typing = false;                    // Signal to allow free typing characters.
@@ -67,10 +67,6 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         }
         private void WindowLoaded(object sender, RoutedEventArgs e) // Execute initialization tasks.
         {
-            //this.drawingGroup = new DrawingGroup();                         // Create the drawing group we'll use for drawing
-            //this.imageSource = new DrawingImage(this.drawingGroup);         // Create an image source that we can use in our image control
-            //Image.Source = this.imageSource;                                // Display the drawing using our image control
-
             kinectWrapper = new Kinect_Wrap();                                      //KINECT_WRAPPER  
             sensor = kinectWrapper.StartKinect(SensorSkeletonFrameReady);           //KINECT_WRAPPER
             kinectDrawing = new Kinect_Drawing(sensor, 640.0f, 480.0f,Image);  //KINECT_DRAWING
@@ -92,8 +88,6 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         {
             kinectWrapper.StopKinect(); //KINECT_WRAPPER
             kinectWrapper.StopSpeech();
-            kinectWrapper = null;
-            kinectDrawing = null;
         }
 
         #region "Speech Recognition"
@@ -101,14 +95,14 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
         /// <summary>
         /// Remove any highlighting from recognition instructions.
         /// </summary>
-        private void ClearRecognitionHighlights()
-        {
-            foreach (Span span in recognitionSpans)
-            {
-                span.Foreground = (Brush)this.Resources[MediumGreyBrushKey];
-                span.FontWeight = FontWeights.Normal;
-            }
-        }
+        //private void ClearRecognitionHighlights()
+        //{
+        //    foreach (Span span in recognitionSpans)
+        //    {
+        //        span.Foreground = (Brush)this.Resources[MediumGreyBrushKey];
+        //        span.FontWeight = FontWeights.Normal;
+        //    }
+        //}
         private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)       // Handler for recognized speech events.
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
@@ -184,6 +178,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                             WinAPIWrapper.WinAPI.MouseStopDrag();
                             break;
                         case "STARTTYPE":
+                            kinectWrapper.StartDictation();
                             typing = true;
                             break;
                     }
@@ -194,7 +189,6 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
 
                 if (e.Result.Confidence >= ConfidenceThreshold)
                 {
-
                     switch (e.Result.Semantics.Value.ToString())
                     {
                         case "PHRASE":
@@ -202,8 +196,13 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                             break;
 
                         case "ENDTYPE":
+                            kinectWrapper.StopDictation();
                             typing = false;
                             break;
+                    }
+                    if(typing)
+                    {
+                        WinAPIWrapper.WinAPI.ManagedSendKeys(e.Result.Text.ToString());
                     }
                 }
             }

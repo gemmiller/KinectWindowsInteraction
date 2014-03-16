@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using Microsoft.Kinect;
+//using System.Speech.Recognition;
 using Microsoft.Speech.Recognition;
+//using System.Speech.AudioFormat;
 using Microsoft.Speech.AudioFormat;
 using System.IO;
 
 namespace Microsoft.Samples.Kinect.SpeechBasics
 {
-    class Kinect_Wrap
+    class Kinect_Wrap// : IDisposable
     {
         KinectSensor myKinect = null;
         EventHandler<SkeletonFrameReadyEventArgs> skeletonFrameEvent = null;
         SpeechRecognitionEngine mySpeechEngine = null;
         EventHandler<SpeechRecognizedEventArgs> recognizedEvent = null;
         EventHandler<SpeechRecognitionRejectedEventArgs> rejectedEvent = null;
+        //DictationGrammar dictation = new DictationGrammar();
         public Kinect_Wrap()
-        {}
+        {
+        }
         public KinectSensor StartKinect(EventHandler<SkeletonFrameReadyEventArgs> skeletonFrame)
         {
             skeletonFrameEvent = skeletonFrame;
@@ -63,6 +68,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             if (null != myKinect)
             {                
                 this.myKinect.AudioSource.Stop();
+                this.myKinect.SkeletonStream.Disable();
                 this.myKinect.Stop();
                 this.myKinect.SkeletonFrameReady -= skeletonFrameEvent;
             }
@@ -72,9 +78,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             recognizedEvent = recognized;
             rejectedEvent = rejected;
             if (myKinect == null)
-            {
-                throw new Exception("Illegal State: Kinnect Not Started");
-            }
+                throw new Exception("Illegal State: Kinnect Not Initialized");
             RecognizerInfo ri = GetKinectRecognizer();
             
             if (null != ri)
@@ -111,13 +115,31 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
                 mySpeechEngine.RecognizeAsyncStop();
             }
         }
+        public void StartDictation()
+        {
+        //    if (mySpeechEngine == null)
+        //        throw new Exception("Illegal State: Speech Engine not initialized");
+        //    mySpeechEngine.LoadGrammar(dictation);
+        }
+        public void StopDictation()
+        {
+        //    if (mySpeechEngine == null)
+        //        throw new Exception("Illegal State: Speech Engine not initialized");
+        //    if (mySpeechEngine.Grammars.Contains(dictation))
+        //        mySpeechEngine.UnloadGrammar(dictation);
+        //    else
+        //        throw new Exception("Illegal State: dictation grammar not loaded");
+        }
 
         // Gets the metadata for the speech recognizer (acoustic model) most suitable to
         // process audio from Kinect device.
         private RecognizerInfo GetKinectRecognizer()
         {
+            System.Collections.ObjectModel.ReadOnlyCollection<Microsoft.Speech.Recognition.RecognizerInfo> mic = Microsoft.Speech.Recognition.SpeechRecognitionEngine.InstalledRecognizers();
+            System.Collections.ObjectModel.ReadOnlyCollection<System.Speech.Recognition.RecognizerInfo> speech = System.Speech.Recognition.SpeechRecognitionEngine.InstalledRecognizers();
             foreach (RecognizerInfo recognizer in SpeechRecognitionEngine.InstalledRecognizers())
             {
+                return recognizer;
                 string value;
                 recognizer.AdditionalInfo.TryGetValue("Kinect", out value);
                 if ("True".Equals(value, StringComparison.OrdinalIgnoreCase) && "en-US".Equals(recognizer.Culture.Name, StringComparison.OrdinalIgnoreCase))

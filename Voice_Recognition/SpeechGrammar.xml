@@ -2,21 +2,17 @@
   <rule id="rootRule">
     <one-of>
       <item>
-        <tag>TypeMicrosoft</tag>
+        <tag>STARTTYPE</tag>
         <one-of>
-          <item> Type Microsoft </item>
+          <item> start type</item>
+          <item> start typing </item>
         </one-of>
       </item>
       <item>
-        <tag>TypeEnter</tag>
+        <tag>ENDTYPE</tag>
         <one-of>
-          <item>Enter</item>
-        </one-of>
-      </item>
-      <item>
-        <tag>TypeWeather</tag>
-        <one-of>
-          <item> Type Ames Weather</item>
+          <item> end type </item>
+          <item> end typing </item>
         </one-of>
       </item>
       <item>
@@ -72,20 +68,6 @@
           <item> kinect to notepad</item>
           <item> kinect to note </item>
           <item> kinect to notes </item>
-        </one-of>
-      </item>
-      <item>
-        <tag>STARTTYPE</tag>
-        <one-of>
-          <item> start type</item>
-          <item> start typing </item>
-        </one-of>
-      </item>
-      <item>
-        <tag>ENDTYPE</tag>
-        <one-of>
-          <item> end type </item>
-          <item> end typing </item>
         </one-of>
       </item>
       <item>

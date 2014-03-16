@@ -36,7 +36,7 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             // Display the drawing using our image control
             this.image.Source = this.imageSource;
         }
-        #region "Constants"
+        #region Reference Variables
             /// <summary>
             /// Thickness of drawn joint lines
             /// </summary>
@@ -49,32 +49,30 @@ namespace Microsoft.Samples.Kinect.SpeechBasics
             /// Thickness of clip edge rectangles
             /// </summary>
             private const double ClipBoundsThickness = 10;
-        #endregion
-        #region "Readonly Reference"
-        /// <summary>
-        /// Brush used to draw skeleton center point
-        /// </summary>
-        private readonly Brush centerPointBrush = Brushes.Blue;
-        /// <summary>
-        /// Brush used for drawing joints that are currently tracked
-        /// </summary>
-        private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-        /// <summary>
-        /// Brush used for drawing joints that are currently inferred
-        /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;
-        /// <summary>
-        /// Pen used for drawing bones that are currently tracked
-        /// </summary>
-        private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
-        /// <summary>
-        /// Pen used for drawing bones that are currently inferred
-        /// </summary>        
-        private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
-        //Custom
-        private readonly Brush CalibrationBrush = Brushes.Purple;
-        private readonly Brush BoundBrush = Brushes.Red;
-        private readonly Pen BoundPen = new Pen(Brushes.Red, 6);
+            /// <summary>
+            /// Brush used to draw skeleton center point
+            /// </summary>
+            private readonly Brush centerPointBrush = Brushes.Blue;
+            /// <summary>
+            /// Brush used for drawing joints that are currently tracked
+            /// </summary>
+            private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+            /// <summary>
+            /// Brush used for drawing joints that are currently inferred
+            /// </summary>        
+            private readonly Brush inferredJointBrush = Brushes.Yellow;
+            /// <summary>
+            /// Pen used for drawing bones that are currently tracked
+            /// </summary>
+            private readonly Pen trackedBonePen = new Pen(Brushes.Green, 6);
+            /// <summary>
+            /// Pen used for drawing bones that are currently inferred
+            /// </summary>        
+            private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+            //Custom
+            private readonly Brush CalibrationBrush = Brushes.Purple;
+            private readonly Brush BoundBrush = Brushes.Red;
+            private readonly Pen BoundPen = new Pen(Brushes.Red, 6);
         #endregion
         public void DrawSkeleton(Skeleton[] skeletons)
         {
